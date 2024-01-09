@@ -1,11 +1,28 @@
 Package: netseer
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Graph Prediction from a Graph Time Series
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: c(
+  person("Sevvandi", "Kandanaarachchi", email = "sevvandik@gmail.com",
+  role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0337-0395")))
+Maintainer: Sevvandi Kandanaarachchi <sevvandik@gmail.com>
+Description: Predicting the structure of a graph including new nodes and edges
+    using a time series of graphs. Flux balance analysis, a linear and integer
+    programming technique used in biochemistry is used with time series 
+    prediction methods to predict the graph structure at a future time point.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.2.1
+Imports: 
+    dplyr,
+    fable,
+    fabletools,
+    igraph,
+    lpSolve,
+    Matrix,
+    rlang,
+    stats,
+    tibble,
+    tidyr,
+    tsibble
