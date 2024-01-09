@@ -1,15 +1,15 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# netseer
+# netseer <img src="man/figures/logo.png" align="right" height="138" />
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 The goal of netseer is to predict the graph structure including new
 nodes and edges from a time series of graphs. The methodology is
-explained in the preprint (Kandanaarachchi 2024). (Link to be updated.)
-We will illustrate an example in this vignette.
+explained in the preprint (Kandanaarachchi 2024). We will illustrate an
+example in this vignette.
 
 ## Installation
 
@@ -91,8 +91,8 @@ grpred <- predict_graph(graphlist[1:15],h = 1)
 #> Joining with `by = join_by(original)`
 grpred
 #> $graph_mean
-#> IGRAPH 0786292 U--- 34 24 -- 
-#> + edges from 0786292:
+#> IGRAPH 74e74fc U--- 34 24 -- 
+#> + edges from 74e74fc:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34
@@ -130,8 +130,8 @@ grpred2 <- predict_graph(graphlist[1:15], h = 2)
 #> Joining with `by = join_by(original)`
 grpred2
 #> $graph_mean
-#> IGRAPH 1143772 U--- 37 27 -- 
-#> + edges from 1143772:
+#> IGRAPH 96a324d U--- 37 27 -- 
+#> + edges from 96a324d:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34 30--35 30--36 30--37
@@ -177,8 +177,8 @@ grpred3 <- predict_graph(graphlist[1:15], h = 3)
 #> Joining with `by = join_by(original)`
 grpred3
 #> $graph_mean
-#> IGRAPH 320463b U--- 40 29 -- 
-#> + edges from 320463b:
+#> IGRAPH 2fe3ee9 U--- 40 29 -- 
+#> + edges from 2fe3ee9:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--35 30--36 30--37 30--38 30--39 30--40
@@ -208,7 +208,7 @@ vcount(grpred3$graph_mean)
 <div id="ref-kand2024graphpred" class="csl-entry">
 
 Kandanaarachchi, Sevvandi. 2024. “Predicting the Structure of Dynamic
-Graphs.” <https://arxiv.org/abs/2210.07407>.
+Graphs (Link to Be Updated).” <https://arxiv.org/abs/2210.07407>.
 
 </div>
 
