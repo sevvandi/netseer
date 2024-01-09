@@ -26,3 +26,5 @@ Imports:
     tibble,
     tidyr,
     tsibble
+Suggests: 
+    feasts
