@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 # netseer <img src="man/figures/logo.png" align="right" height="138" />
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of netseer is to predict the graph structure including new nodes and edges from a time series of graphs. The methodology is explained in the preprint  [@kand2024graphpred]. We will illustrate an example in this vignette. 

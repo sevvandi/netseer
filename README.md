@@ -4,6 +4,8 @@
 # netseer <img src="man/figures/logo.png" align="right" height="138" />
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of netseer is to predict the graph structure including new
@@ -91,8 +93,8 @@ grpred <- predict_graph(graphlist[1:15],h = 1)
 #> Joining with `by = join_by(original)`
 grpred
 #> $graph_mean
-#> IGRAPH 74e74fc U--- 34 24 -- 
-#> + edges from 74e74fc:
+#> IGRAPH 9421d18 U--- 34 24 -- 
+#> + edges from 9421d18:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34
@@ -130,8 +132,8 @@ grpred2 <- predict_graph(graphlist[1:15], h = 2)
 #> Joining with `by = join_by(original)`
 grpred2
 #> $graph_mean
-#> IGRAPH 96a324d U--- 37 27 -- 
-#> + edges from 96a324d:
+#> IGRAPH 5e52730 U--- 37 27 -- 
+#> + edges from 5e52730:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34 30--35 30--36 30--37
@@ -177,8 +179,8 @@ grpred3 <- predict_graph(graphlist[1:15], h = 3)
 #> Joining with `by = join_by(original)`
 grpred3
 #> $graph_mean
-#> IGRAPH 2fe3ee9 U--- 40 29 -- 
-#> + edges from 2fe3ee9:
+#> IGRAPH 7613a37 U--- 40 29 -- 
+#> + edges from 7613a37:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--35 30--36 30--37 30--38 30--39 30--40
