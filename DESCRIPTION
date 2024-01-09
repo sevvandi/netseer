@@ -27,4 +27,5 @@ Imports:
     tidyr,
     tsibble
 Suggests: 
-    feasts
+    feasts,
+    urca
