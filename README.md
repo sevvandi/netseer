@@ -93,8 +93,8 @@ grpred <- predict_graph(graphlist[1:15],h = 1)
 #> Joining with `by = join_by(original)`
 grpred
 #> $graph_mean
-#> IGRAPH 77d80f0 U--- 34 24 -- 
-#> + edges from 77d80f0:
+#> IGRAPH 29bf848 U--- 34 24 -- 
+#> + edges from 29bf848:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34
@@ -132,8 +132,8 @@ grpred2 <- predict_graph(graphlist[1:15], h = 2)
 #> Joining with `by = join_by(original)`
 grpred2
 #> $graph_mean
-#> IGRAPH 3a2ac77 U--- 37 27 -- 
-#> + edges from 3a2ac77:
+#> IGRAPH 4a018e0 U--- 37 27 -- 
+#> + edges from 4a018e0:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34 30--35 30--36 30--37
@@ -179,8 +179,8 @@ grpred3 <- predict_graph(graphlist[1:15], h = 3)
 #> Joining with `by = join_by(original)`
 grpred3
 #> $graph_mean
-#> IGRAPH 5cce1e0 U--- 40 29 -- 
-#> + edges from 5cce1e0:
+#> IGRAPH 7bbd63c U--- 40 29 -- 
+#> + edges from 7bbd63c:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--35 30--36 30--37 30--38 30--39 30--40
@@ -210,7 +210,7 @@ vcount(grpred3$graph_mean)
 <div id="ref-kand2024graphpred" class="csl-entry">
 
 Kandanaarachchi, Sevvandi. 2024. “Predicting the Structure of Dynamic
-Graphs (Link to Be Updated).” <https://arxiv.org/abs/2210.07407>.
+Graphs.” <https://arxiv.org/abs/2401.04280>.
 
 </div>
 
