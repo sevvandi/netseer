@@ -45,10 +45,10 @@ edge_increase_val <- new_nodes_val <- del_edge_val <- 0.1
 graphlist <- list()
 graphlist[[1]] <- gr <-  igraph::sample_pa(5, directed = FALSE)
 for(i in 2:15){
-gr <-  generate_graph(gr,
-                     del_edge = del_edge_val,
-                     new_nodes = new_nodes_val,
-                     edge_increase = edge_increase_val )
+gr <-  generate_graph_exp(gr,
+                          del_edge = del_edge_val,
+                          new_nodes = new_nodes_val,
+                          edge_increase = edge_increase_val )
 graphlist[[i]] <- gr
 }
 ```
@@ -79,9 +79,8 @@ plot(graphlist[[15]])
 <img src="man/figures/README-plotdata-3.png" width="100%" /> \###
 Predicting the next graph
 
-Let’s predict the next graph. The argument
-![h = 1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h%20%3D%201 "h = 1")
-specifies we want to predict the graph at the next time point.
+Let’s predict the next graph. The argument $h = 1$ specifies we want to
+predict the graph at the next time point.
 
 ``` r
 grpred <- predict_graph(graphlist[1:15],h = 1)
@@ -93,8 +92,8 @@ grpred <- predict_graph(graphlist[1:15],h = 1)
 #> Joining with `by = join_by(original)`
 grpred
 #> $graph_mean
-#> IGRAPH 29bf848 U--- 34 24 -- 
-#> + edges from 29bf848:
+#> IGRAPH bd2d240 U--- 34 24 -- 
+#> + edges from bd2d240:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34
@@ -119,8 +118,7 @@ vcount(grpred$graph_mean)
 
 ### Predicting the graph at 2 time steps ahead
 
-Now let us predict the graph at 2 time steps ahead with
-![h=2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h%3D2 "h=2").
+Now let us predict the graph at 2 time steps ahead with $h=2$.
 
 ``` r
 grpred2 <- predict_graph(graphlist[1:15], h = 2)
@@ -132,8 +130,8 @@ grpred2 <- predict_graph(graphlist[1:15], h = 2)
 #> Joining with `by = join_by(original)`
 grpred2
 #> $graph_mean
-#> IGRAPH 4a018e0 U--- 37 27 -- 
-#> + edges from 4a018e0:
+#> IGRAPH 94fa600 U--- 37 27 -- 
+#> + edges from 94fa600:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--34 30--35 30--36 30--37
@@ -156,18 +154,14 @@ vcount(grpred2$graph_mean)
 #> [1] 37
 ```
 
-We see the predicted graph at
-![h=2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h%3D2 "h=2")
-has more vertices and edges than the graph at
-![h=1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h%3D1 "h=1").
+We see the predicted graph at $h=2$ has more vertices and edges than the
+graph at $h=1$.
 
 ### Predicting the graph at 3 time steps ahead
 
 Similarly, we can predict the graph at 3 time steps ahead. We don’t have
-a limit on
-![h](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;h "h").
-But generally, as we get further into the future, the predictions are
-less accurate. This is with everything, not just graphs.
+a limit on $h$. But generally, as we get further into the future, the
+predictions are less accurate. This is with everything, not just graphs.
 
 ``` r
 grpred3 <- predict_graph(graphlist[1:15], h = 3)
@@ -179,8 +173,8 @@ grpred3 <- predict_graph(graphlist[1:15], h = 3)
 #> Joining with `by = join_by(original)`
 grpred3
 #> $graph_mean
-#> IGRAPH 7bbd63c U--- 40 29 -- 
-#> + edges from 7bbd63c:
+#> IGRAPH d9abc19 U--- 40 29 -- 
+#> + edges from d9abc19:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
 #> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
 #> [21] 11--19 13--15 17--19 30--35 30--36 30--37 30--38 30--39 30--40

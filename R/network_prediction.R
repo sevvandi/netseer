@@ -39,7 +39,7 @@
 #' graphlist <- list()
 #' graphlist[[1]] <- gr <-  igraph::sample_pa(5, directed = FALSE)
 #' for(i in 2:15){
-#'   gr <-  generate_graph(gr,
+#'   gr <-  generate_graph_exp(gr,
 #'                         del_edge = del_edge_val,
 #'                         new_nodes = new_nodes_val,
 #'                         edge_increase = edge_increase_val )
