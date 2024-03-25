@@ -10,7 +10,7 @@ predict_graph(
   conf_level1 = NULL,
   conf_level2 = 90,
   dense_opt = 2,
-  weights_opt = 4,
+  weights_opt = 6,
   weights_param = 0.001,
   h = 1
 )
@@ -35,11 +35,15 @@ set to \code{90}.}
 \item{dense_opt}{If set to \code{2} the dense option in R package \code{lpSolve}
 will be used.}
 
-\item{weights_opt}{Weights option ranging from 1 to 4 used for different edge weight
+\item{weights_opt}{Weights option ranging from 1 to 6 used for different edge weight
 schemes. Weights option 1 uses uniform weights for all edges. Option 2 uses binary
 weights. If the edge existed in a past graph, then weight is set to 1. Else set to
 0. All possible new edges are assigned weight 1. Option 3 is a more selective
-version. Option 4 is proportional weights according to the history.}
+version. Option 4 uses proportional weights according to the history. Option 5 uses
+proportional weights, but as the network is more in the past, it gives less weight.
+Option 5 uses linearly decaying proportional weights. Option 6 uses harmonically decaying
+weights. That is the network at \code{T} is given weight 1,  \code{T-1}
+is given weight 1/2 and so on. Default is set to \code{6}.}
 
 \item{weights_param}{The weight given for possible edges from new vertices. Default
 set to \code{0.001}.}
@@ -69,7 +73,7 @@ for(i in 2:15){
                         edge_increase = edge_increase_val )
   graphlist[[i]] <- gr
 }
-grpred <- predict_graph(graphlist[1:15], conf_level2 = 90, weights_opt = 4)
+grpred <- predict_graph(graphlist[1:15], conf_level2 = 90, weights_opt = 6)
 grpred
 
 }

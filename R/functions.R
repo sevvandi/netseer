@@ -207,7 +207,7 @@ get_weights <- function(biggr, f_con, weights_opt, dense_opt){
         pull(column)
       f_obj[cols] <- 1
     }
-  }else if(weights_opt == 4){
+  }else if(weights_opt == 4 | weights_opt == 5 | weights_opt == 6){
     # Weights df
     weights <- cbind.data.frame(igraph::as_edgelist(biggr), igraph::E(biggr)$weight)
     colnames(weights) <- c("From", "To", "weight")
@@ -390,8 +390,45 @@ construct_union_graph <- function(graphlist,
       }
     }
     igraph::E(biggr)$weight <- igraph::E(biggr)$weight/max(igraph::E(biggr)$weight)
+  }else if(weights_opt == 5){
+    # This is linearly decaying weights over time.
+    # ii goes from 1 to NN
+    # ii = 1 is the first time step
+    # ii = NN is the most recent time step
+    for(ii in 1:NN){
+      grr <- graphlist[[ii]]
+      igraph::E(grr)$weight <- ii
+      if(ii == 1){
+        biggr <- grr
+      }else{
+        biggr <- (biggr %u% grr)
+        igraph::E(biggr)$weight_1[is.na(igraph::E(biggr)$weight_1)] <- 0
+        igraph::E(biggr)$weight_2[is.na(igraph::E(biggr)$weight_2)] <- 0
+        igraph::E(biggr)$weight <- igraph::E(biggr)$weight_1 +  igraph::E(biggr)$weight_2
+      }
+    }
+    igraph::E(biggr)$weight <- igraph::E(biggr)$weight/max(igraph::E(biggr)$weight)
+  }else if(weights_opt == 6){
+    # This is decaying weights over time like 1, 1/2, 1/3, etc . . .
+    # ii goes from 1 to NN
+    # ii = 1 is the first time step
+    # ii = NN is the most recent time step
+    for(ii in 1:NN){
+      grr <- graphlist[[ii]]
+      igraph::E(grr)$weight <- 1/(NN - ii + 1)
+      if(ii == 1){
+        biggr <- grr
+      }else{
+        biggr <- (biggr %u% grr)
+        igraph::E(biggr)$weight_1[is.na(igraph::E(biggr)$weight_1)] <- 0
+        igraph::E(biggr)$weight_2[is.na(igraph::E(biggr)$weight_2)] <- 0
+        igraph::E(biggr)$weight <- igraph::E(biggr)$weight_1 +  igraph::E(biggr)$weight_2
+      }
+    }
+    igraph::E(biggr)$weight <- igraph::E(biggr)$weight/max(igraph::E(biggr)$weight)
   }else{
-    # For t = 1 to n
+  # For weight options 1, 2, 3
+  # For t = 1 to n
     for(ii in 1:NN){
       grr <- graphlist[[ii]]
       if(ii == 1){
@@ -419,14 +456,14 @@ construct_union_graph <- function(graphlist,
       # Binary weights - new nodes connected to most connected old nodes
       # Add new edges from new nodes to mostly connected vertices
       possible_edges <- c(rbind(rep(verts, new_nodes), rep(new_vertices, each = length(verts)) ))
-    }else if(weights_opt == 4){
+    }else if(weights_opt == 4|weights_opt == 5|weights_opt == 6){
       # Proportional weights - new nodes connected to all old nodes
       # But the weights will be much smaller
       possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
       new_weights <- quantile(igraph::E(biggr)$weight, probs = weights_param)
     }
 
-    if(weights_opt == 4){
+    if(weights_opt == 4|weights_opt == 5|weights_opt == 6){
       biggr <- biggr %>%
         igraph::add_edges(possible_edges,weight = new_weights)
     }else{
