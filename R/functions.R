@@ -397,7 +397,7 @@ construct_union_graph <- function(graphlist,
     # ii = NN is the most recent time step
     for(ii in 1:NN){
       grr <- graphlist[[ii]]
-      igraph::E(grr)$weight <- ii
+      igraph::E(grr)$weight <- ii # this line make linear decaying weights
       if(ii == 1){
         biggr <- grr
       }else{
@@ -415,7 +415,7 @@ construct_union_graph <- function(graphlist,
     # ii = NN is the most recent time step
     for(ii in 1:NN){
       grr <- graphlist[[ii]]
-      igraph::E(grr)$weight <- 1/(NN - ii + 1)
+      igraph::E(grr)$weight <- 1/(NN - ii + 1) # this line make harmonically decaying weights
       if(ii == 1){
         biggr <- grr
       }else{
@@ -438,12 +438,49 @@ construct_union_graph <- function(graphlist,
       }
     }
   }
+  # Weights for new edges according to quantile
+  new_weights <- quantile(igraph::E(biggr)$weight, probs = weights_param)
+
+  if(weights_opt %in% c(4,5,6)){
+    bigadj1 <- igraph::as_adjacency_matrix(biggr)
+    bigadj <- bigadj1 %*% bigadj1
+    for(ll in 1:(NROW(bigadj)-1)){
+      for(mm in (ll+1):NCOL(bigadj)){
+        if((bigadj[ll, mm] > 0) & (bigadj1[ll, mm] == 0)){
+          biggr <- biggr %>%
+            igraph::add_edges(c(ll, mm), weight = 2*new_weights)
+        }
+      }
+    }
+  }else{
+    # weights_opt 1, 2, 3
+    bigadj1 <- igraph::as_adjacency_matrix(biggr)
+    bigadj <- bigadj1 %*% bigadj1
+    for(ll in 1:(NROW(bigadj)-1)){
+      for(mm in (ll+1):NCOL(bigadj)){
+        if((bigadj[ll, mm] > 0) & (bigadj1[ll, mm] == 0)){
+          biggr <- biggr %>%
+            igraph::add_edges(c(ll, mm))
+        }
+      }
+    }
+  }
+  # Add edges if nodes share a neighbour
+
 
   if(new_nodes > 0){
     # Add new nodes
     biggr <- igraph::add_vertices(biggr, new_nodes)
     new_vertices <- igraph::V(biggr)[( igraph::gorder(biggr)-new_nodes+1):igraph::gorder(biggr)]
-    old_vertices <- igraph::V(biggr)[1:(igraph::gorder(biggr)-new_nodes)]
+    # old_vertices <- igraph::V(biggr)[1:(igraph::gorder(biggr)-new_nodes)]
+    # Use only a fixed number of old vertices
+    # Which vertices have the highest degree
+    grlast <- graphlist[[NN]]
+    if(igraph::vcount(grlast) > 20){
+      old_vertices <- order(igraph::degree(grlast), decreasing = TRUE)[1:20]
+    }else{
+      old_vertices <- igraph::V(biggr)[1:(igraph::gorder(biggr)-new_nodes)]
+    }
 
     new_deg2 <- min(2*new_deg, igraph::vcount(biggr))
     verts <- order(igraph::degree(biggr), decreasing = TRUE)[1:new_deg2]
@@ -460,7 +497,7 @@ construct_union_graph <- function(graphlist,
       # Proportional weights - new nodes connected to all old nodes
       # But the weights will be much smaller
       possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
-      new_weights <- quantile(igraph::E(biggr)$weight, probs = weights_param)
+      # new_weights <- quantile(igraph::E(biggr)$weight, probs = weights_param)
     }
 
     if(weights_opt == 4|weights_opt == 5|weights_opt == 6){
@@ -472,6 +509,8 @@ construct_union_graph <- function(graphlist,
     }
 
   }
+
+
   biggr
 }
 

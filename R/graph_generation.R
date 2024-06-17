@@ -95,7 +95,8 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
   # Add edges
   # num_edges2 <- ceiling(num_edges*(1 + edge_increase)) -  igraph::ecount(gr2)
   num_edges2 <- edge_increase*2
-  gr2 <- gr2 + igraph::edge(sample(igraph::V(gr2), num_edges2, replace = T))
+  probs <- igraph::degree(gr2)/sum(igraph::degree(gr2))
+  gr2 <- gr2 + igraph::edge(sample(igraph::V(gr2), num_edges2, replace = T, prob = probs ))
   gr2 <- igraph::simplify(gr2)
   return(gr2)
 }
