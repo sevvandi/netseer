@@ -155,6 +155,7 @@ predict_graph_internal <- function(graphlist,
     lpobj_orig <- lpobj
   }
   if (debug | lpsolve_vars_type == 2){ #TRUE else#
+    print("Setting maximum degree constraint")
     max_degrees <- probj$degree_hi
     if (new_nodes > 0){
       new_degrees <- predict_new_nodes_degree(graphlist)
@@ -164,23 +165,29 @@ predict_graph_internal <- function(graphlist,
     }
     print("Max degrees:")
     print(maximum_degrees)
+    print("Constructing union graph")
     biggr <- construct_union_graph(graphlist, new_nodes, maximum_degrees, rm_verts, weights_opt = weights_opt, weights_param = weights_param)
     print(sprintf("The union graph has %d nodes, %d edges, constraint to use %d edges", igraph::vcount(biggr), igraph::ecount(biggr), probj$total_edges_upper))
+    print("Setting sparse solver constraints")
     lpsolve_vars <- sparse_solver_formulation(biggr, maximum_degrees, probj$total_edges_upper)#probj$degree_hi
     #print(lpsolve_vars)
     #print(lpsolve_vars$constraint_rhs)
     #print(lpsolve_vars$objective_function)
     obj_new <- lpsolve_vars$objective_function
     l <- length(lpsolve_vars$objective_function)
+    print("Running LPSolve")
     lpobj <- run_lpsolve_dense(lpsolve_vars$constraint_matrix, lpsolve_vars$objective_function, lpsolve_vars$constraint_rhs, lpsolve_vars$constraint_direction)
+    print(sprintf("LPSolve solution status (should be 0) is %d", lpobj$status) )
     #print(lpobj$solution)
     #print(lpobj)
+    print("Constructing graph from LPSove Solution")
     grout <- graph_from_solution(lpobj$solution, lpsolve_vars$used_edges, igraph::vcount(biggr))
     check_rhs <- lpsolve_vars$constraint_rhs
     #plot(grout)
     #title("Alternete Graph Setup")
     gr_new <- grout
   }
+  print("Checking that constraints are met")
   check_constraints(grout, maximum_degrees, probj$total_edges_upper)
 
   if (debug){
@@ -201,6 +208,7 @@ predict_graph_internal <- function(graphlist,
     print(sprintf("Orig objective: %f, new objective %f: difference = %f", lpobj_orig$objval, lpobj$objval, lpobj$objval - lpobj_orig$objval))
   }
 
+  print("Predict graph internal done")
   grout
 
 }
@@ -579,10 +587,11 @@ construct_union_graph <- function(graphlist,
 
 predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   # Forecast the degree of the old nodes
-
+  future::plan(future::multisession)
   degree <- edges <- hilow <- lower <- upper <- upper2 <- lower2  <- mean2 <- NULL
 
   NN <- length(graphlist)
+  print("Setting up dfall")
   for(jj in 1:NN){
     gr <- graphlist[[jj]]
     if(is.null(names(igraph::V(gr)))){
@@ -601,11 +610,13 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
     }
   }
 
+  print("Making dfmerge")
   dfmerge <- tibble::as_tibble(dfall) %>%
     tsibble::as_tsibble(index = time , key = vertex) %>%
     dplyr::arrange(time, vertex) %>%
     tsibble::fill_gaps(degree = 0)
 
+  print("making dffreq")
   dffreq <- dfall %>%
     group_by(vertex) %>%
     summarize(freq = n())
@@ -619,9 +630,12 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   #  full_join(dffreq)
 
   #%>% #split apart version, for better profiling
+  print("making fabletools model")
     fbm <-fabletools::model(.data=dfmerge, arima = fable::ARIMA(degree),
                       naive = fable::NAIVE(degree))
+    print("doing fabletools forecast")
     fc <- fabletools::forecast(object=fbm, h = h)#%>%
+    print("full join of fabletools results")
     fit <- full_join(fc, dffreq)
 
   #original version - may handle profiling better
@@ -632,19 +646,23 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   #  full_join(dffreq)
 
   # Fit ARIMA for total edges
+    print("running fabletools on total number of edges")
   fit_total <-  tibble::as_tibble(dfall_sum) %>%
     tsibble::as_tsibble(index = time) %>%
     fabletools::model(arima = fable::ARIMA(edges)) %>%
     fabletools::forecast(h = h)
 
   # Get hilo for vertices separately
+  print("getting hilo of vertices")
   dfhilo <- fit %>%
     fabletools::hilo(level = conf_level2)
   uniq_times <- unique(dfhilo$time)
 
+  print("hilo mutate")
   colnames(dfhilo)[7] <- 'hilow'
   dfhilo <- dfhilo %>%
     mutate(lower = floor(hilow$lower), upper = ceiling(hilow$upper))
+  print("hilo filter/groupby/summarise")
   dfhilo_vtx <- dfhilo %>%
     filter(time == uniq_times[h]) %>%
     group_by(vertex) %>%
@@ -654,11 +672,13 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
               freq = mean(freq))
 
   # Get hilo for total edges
+  print("Getting hilo of total edges")
   dfhilo_total <- fit_total %>%
     fabletools::hilo(level = conf_level2)
 
 
   # Forecast of the old nodes
+  print("Getting hilo forecast of old nodes")
   # upper limit
   f_rhs_up <- dfhilo_vtx %>%
     pull(upper2)
@@ -681,6 +701,7 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   }
 
   #  Total edges predictions
+  print("Getting total edges hilo")
   total_edges_mean <- dfhilo_total %>%
     pull(.data$.mean) %>%
     ceiling()

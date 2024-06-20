@@ -1,8 +1,17 @@
-setup_graph <- function(start_nodes = 1000, del_edges = 100, new_nodes = 50, new_edges = 200, num_iters = 15){
+library(future)
+
+setup_graph <- function(start_nodes = 1000, del_edges = 100, new_nodes = 50, new_edges = 200, num_iters = 15, mode="linear"){
   graphlist <- list()
   gr <- graphlist[[1]] <- igraph::sample_pa(start_nodes, directed = FALSE)
+  if (mode == "linear"){
+    graph_func <- netseer::generate_graph_linear
+  } else if (mode == "exponential"){
+    graph_func <- netseer::generate_graph_exp
+  } else {
+    stop(sprintf("UnExepected graph creation mode \"%s\", was expecting \"linear\" or \"exponential\" ", mode) )
+  }
   for(i in 2:num_iters){
-    gr <-  netseer::generate_graph_linear(gr, #
+    gr <-  graph_func(gr, #
                               del_edge = del_edges,
                               new_nodes = new_nodes,
                               edge_increase = new_edges )
@@ -17,14 +26,15 @@ pred_graphlist <- function(graphlist, num_steps = 5){
 }
 
 profile_code <- function(start_nodes=1000, new_nodes=30, add_edges=200, del_edges=100, num_iters=15, pred_steps=5,
-                         do_prof=TRUE, interval=0.01, suffix=""){
+                         mode="linear", do_prof=TRUE, interval=0.01, suffix=""){
   #profile the code with Rprof, but don't try to visualise it
+  #future::plan("multisession")
   fname <- paste("prof_s", start_nodes, "_nn", new_nodes, "_ae", add_edges, "_de", del_edges, suffix, sep="")
   print(fname)
   fname <- paste(fname, "Rprof", sep=".")
   print(fname)
   fname <- paste(getwd(), "profiles", fname, sep="/")
-  gl <- setup_graph(start_nodes, del_edges, new_nodes, add_edges, num_iters)
+  gl <- setup_graph(start_nodes, del_edges, new_nodes, add_edges, num_iters, mode)
   print(fname)
   start_time <- Sys.time()
   if (do_prof){
@@ -104,4 +114,34 @@ sconv <- function(bool_string){
     out_idx <- out_idx + 1
   }
   out
+}
+
+main <- function(args){
+  print("Running local main")
+  parser <- optparse::OptionParser()
+  parser <- optparse::add_option(parser, "--start_nodes", help="Starting number of nodes", default=40)
+  parser <- optparse::add_option(parser, "--add_nodes", help="Number of nodes to add for each step in the graph list", default=1)
+  parser <- optparse::add_option(parser, "--add_edges", help="number of edges to add to the graph each step", default=40)
+  parser <- optparse::add_option(parser, "--del_edges", help="number of edges to delete from the graph each step", default=20)
+  parser <- optparse::add_option(parser, "--num_iters", help="Number of graphs to add to preceding graph list", default=15)
+  parser <- optparse::add_option(parser, "--num_predict", help="Number of steps into the future to use for the prediction", default=5)
+  parser <- optparse::add_option(parser, "--grow_mode", help="Whether to grow the input graphs linearly or exponentially ['linear' or 'exponential']", default="linear")
+  parser <- optparse::add_option(parser, "--do_prof", action="store_true", help="Set this option to profile the code")
+  parser <- optparse::add_option(parser, "--interval", help="Profiling interval", default=0.05)
+  parser <- optparse::add_option(parser, "--suffix", help="suffix to add to profiling data file", default="")
+  opts <- optparse::parse_args(parser, args)
+
+
+  #print(commandArgs(FALSE))
+  #print(opts)
+  devtools::load_all()
+  #(start_nodes=1000, new_nodes=30, add_edges=200, del_edges=100, num_iters=15, pred_steps=5, do_prof=TRUE, interval=0.01, suffix="", mode="linear")
+  running_time <- profile_code(start_nodes=opts$start_nodes, new_nodes=opts$add_nodes, add_edges=opts$add_edges,
+                               del_edges=opts$del_edges, num_iters=opts$num_iters, pred_steps=opts$num_predict,
+                               mode=opts$grow_mode, do_prof=FALSE, interval=opts$interval, suffix=opts$suffix)
+  print(running_time)
+}
+
+if (sys.nframe() == 0){
+  main(commandArgs(TRUE))
 }
