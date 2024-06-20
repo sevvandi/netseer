@@ -78,7 +78,7 @@ generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_
 generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_increase = 1){
 
   if(is.null(gr)){
-    gr <- igraph::sample_pa(5, directed = FALSE)
+    gr <- igraph::sample_pa(10, directed = FALSE)
   }
 
 
@@ -87,16 +87,41 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
 
   # Removing edges
   edges_remove <- sample(igraph::E(gr), del_edge)
-  gr2 <- igraph::delete_edges(gr, edges_remove)
+  gr <- igraph::delete_edges(gr, edges_remove)
 
-  # Adding vertices
-  gr2 <- igraph::add_vertices(gr2, new_nodes)
+  # Possible edges to add
+  adj1 <- igraph::as_adjacency_matrix(gr)
+  adj2 <- adj1 %*%adj1
+  possible_edges <- c()
+  for(ll in 1:(NROW(adj2)-1)){
+    for(mm in (ll+1):NCOL(adj2)){
+      if((adj2[ll, mm] > 0) & (adj1[ll, mm] == 0)){
+        possible_edges <- c(possible_edges, c(ll, mm))
+      }
+    }
+  }
 
   # Add edges
-  # num_edges2 <- ceiling(num_edges*(1 + edge_increase)) -  igraph::ecount(gr2)
   num_edges2 <- edge_increase*2
-  probs <- igraph::degree(gr2)/sum(igraph::degree(gr2))
-  gr2 <- gr2 + igraph::edge(sample(igraph::V(gr2), num_edges2, replace = T, prob = probs ))
+  edges_to_add_inds <- sort(sample(length(possible_edges)/2, num_edges2))
+  edges_to_add_inds1 <- edges_to_add_inds*2 -1
+  edges_to_add_inds2 <- edges_to_add_inds*2
+  edges_to_add <- possible_edges[c(rbind(edges_to_add_inds1, edges_to_add_inds2))]
+  gr2 <- gr + igraph::edge(edges_to_add)
+
+  # Adding vertices
   gr2 <- igraph::simplify(gr2)
-  return(gr2)
+  gr3 <- igraph::add_vertices(gr2, new_nodes)
+
+  # Add edges to these vertices
+  num_edges3 <- edge_increase*3
+  probs <- igraph::degree(gr2)/sum(igraph::degree(gr2))
+  new_node_ids <-  which(igraph::degree(gr3) == 0)
+  e1 <- sample(igraph::V(gr2), num_edges3, replace = T, prob = probs )
+  e2 <- sample(new_node_ids, num_edges3, replace = T)
+  gr3 <- gr3 + igraph::edge(rbind(e1, e2))
+  gr3 <- igraph::simplify(gr3)
+
+
+  return(gr3)
 }
