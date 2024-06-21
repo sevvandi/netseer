@@ -1044,7 +1044,8 @@ sparse_solver_formulation <- function(union_graph, max_degrees, total_edges_cons
   end_idxs <- (2*num_edges+1):(3*num_edges)
   constraint_matrix[end_idxs,1] <- length(constraint_rhs)
   constraint_matrix[end_idxs,2] <- idxs
-  constraint_direction = c(rep("<=", num_nodes), "==")
+  # constraint_direction = c(rep("<=", num_nodes), "==") # Stefan's code
+  constraint_direction = c(rep("<=", num_nodes), "<=") # Sevvandi's update
 
   #print(sprintf("The max from node is %d and the max to node is %d", max(edge_list[,1]), max(edge_list[,2]) ))
   #print(sprintf("Max of constraint col 1 is %d, the last constraint should be %d", max(constraint_matrix[,1]), length(constraint_rhs) ) )
