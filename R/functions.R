@@ -566,7 +566,9 @@ construct_union_graph <- function(graphlist,
       # Proportional weights - new nodes connected to all old nodes
       # But the weights will be much smaller
       possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
-      new_weights <- quantile(igraph::E(biggr)$weight, probs = weights_param)
+      new_weights0 <- igraph::degree(biggr)[old_vertices]/(sum(igraph::degree(biggr)[old_vertices]))
+      new_weights <- quantile(igraph::E(biggr)$weight, probs = new_weights0)
+      new_weights <- rep(new_weights, new_nodes )
     }
 
     if(weights_opt == 4|weights_opt == 5|weights_opt == 6){
