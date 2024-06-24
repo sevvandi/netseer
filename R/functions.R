@@ -302,7 +302,7 @@ get_weights <- function(biggr, f_con, weights_opt, dense_opt){
         pull(column)
       f_obj[cols] <- 1
     }
-  }else if(weights_opt == 4 | weights_opt == 5 | weights_opt == 6){
+  }else if(weights_opt == 4 | weights_opt == 5 | weights_opt == 6 | weights_opt == 7){
     # Weights df
     weights <- cbind.data.frame(igraph::as_edgelist(biggr), igraph::E(biggr)$weight)
     colnames(weights) <- c("From", "To", "weight")
@@ -521,6 +521,10 @@ construct_union_graph <- function(graphlist,
       }
     }
     igraph::E(biggr)$weight <- igraph::E(biggr)$weight/max(igraph::E(biggr)$weight)
+  }else if(weights_opt == 7){
+    # This set of weights give 1 to the last time step and 0 to the rest
+    biggr <- graphlist[[NN]]
+    igraph::E(biggr)$weight <- 1
   }else{
   # For weight options 1, 2, 3
   # For t = 1 to n
@@ -562,7 +566,7 @@ construct_union_graph <- function(graphlist,
       # Binary weights - new nodes connected to most connected old nodes
       # Add new edges from new nodes to mostly connected vertices
       possible_edges <- c(rbind(rep(verts, new_nodes), rep(new_vertices, each = length(verts)) ))
-    }else if(weights_opt == 4|weights_opt == 5|weights_opt == 6){
+    }else if(weights_opt == 4|weights_opt == 5|weights_opt == 6 | weights_opt == 7){
       # Proportional weights - new nodes connected to all old nodes
       # But the weights will be much smaller
       possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
@@ -571,7 +575,7 @@ construct_union_graph <- function(graphlist,
       new_weights <- rep(new_weights, new_nodes )
     }
 
-    if(weights_opt == 4|weights_opt == 5|weights_opt == 6){
+    if(weights_opt == 4|weights_opt == 5|weights_opt == 6 | weights_opt == 7){
       biggr <- biggr %>%
         igraph::add_edges(possible_edges,weight = new_weights)
     }else{
