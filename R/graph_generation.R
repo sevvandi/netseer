@@ -76,7 +76,6 @@ generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_
 #'@export
 #'@export
 generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_increase = 1){
-
   if(is.null(gr)){
     gr <- igraph::sample_pa(10, directed = FALSE)
   }
@@ -86,35 +85,40 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
   edges <- igraph::E(gr)
 
   # Removing edges
-  edges_remove <- sample(igraph::E(gr), del_edge)
+  edges_remove <- sample(igraph::E(gr), min(del_edge, igraph::ecount(gr)))
   gr <- igraph::delete_edges(gr, edges_remove)
 
   # Possible edges to add
   adj1 <- igraph::as_adjacency_matrix(gr)
   adj2 <- adj1 %*%adj1
-  possible_edges <- c()
-  for(ll in 1:(NROW(adj2)-1)){
-    for(mm in (ll+1):NCOL(adj2)){
-      if((adj2[ll, mm] > 0) & (adj1[ll, mm] == 0)){
-        possible_edges <- c(possible_edges, c(ll, mm))
-      }
-    }
-  }
+  #possible_edges <- c()
+  #for(ll in 1:(NROW(adj2)-1)){
+  #  for(mm in (ll+1):NCOL(adj2)){
+  #    if((adj2[ll, mm] > 0) & (adj1[ll, mm] == 0)){
+  #      possible_edges <- c(possible_edges, c(ll, mm))
+  #    }
+  #  }
+  #}
+  neighbours_of_neighbours_edges <- Matrix::which((adj1 == 0) & (adj2 > 0), arr.ind=TRUE)
+  neighbours_of_neighbours_edges <- neighbours_of_neighbours_edges[neighbours_of_neighbours_edges[,1] < neighbours_of_neighbours_edges[,2],] #get upper triangle
 
   # Add edges
-  num_edges2 <- edge_increase*2
-  edges_to_add_inds <- sort(sample(length(possible_edges)/2, num_edges2))
-  edges_to_add_inds1 <- edges_to_add_inds*2 -1
-  edges_to_add_inds2 <- edges_to_add_inds*2
-  edges_to_add <- possible_edges[c(rbind(edges_to_add_inds1, edges_to_add_inds2))]
-  gr2 <- gr + igraph::edge(edges_to_add)
+  #possible_len <- length(possible_edges)/2
+  #num_edges2 <- min(possible_len, edge_increase*2)
+  #edges_to_add_inds <- sort(sample(possible_len, num_edges2))
+  #edges_to_add_inds1 <- edges_to_add_inds*2 -1
+  #edges_to_add_inds2 <- edges_to_add_inds*2
+  #edges_to_add <- possible_edges[c(rbind(edges_to_add_inds1, edges_to_add_inds2))]
+  num_non <-NROW(neighbours_of_neighbours_edges)
+  edges_to_add <- t(neighbours_of_neighbours_edges[sample(num_non, min(edge_increase, num_non)),])
+  gr2 <- gr + igraph::edge(edges_to_add )
 
   # Adding vertices
   gr2 <- igraph::simplify(gr2)
   gr3 <- igraph::add_vertices(gr2, new_nodes)
 
   # Add edges to these vertices
-  num_edges3 <- edge_increase*3
+  num_edges3 <- new_nodes*3#edge_increase
   probs <- igraph::degree(gr2)/sum(igraph::degree(gr2))
   new_node_ids <-  which(igraph::degree(gr3) == 0)
   e1 <- sample(igraph::V(gr2), num_edges3, replace = T, prob = probs )
