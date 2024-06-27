@@ -85,6 +85,7 @@ predict_graph <- function(graphlist,
   grout_upper <- grout_lower <- graph_mean <- graph_lower <- graph_upper <- NULL
 
   # Step 1 - forecast the number of nodes
+  pkg_message(c("i"="Predicting number of nodes"))
   new_nodes_list <-  predict_num_nodes(graphlist, conf_level1, h)
   new_nodes <- new_nodes_list$new_nodes
   if(!is.null(conf_level1)){
@@ -95,9 +96,11 @@ predict_graph <- function(graphlist,
   }
 
   # Step 2 - Forecast the degree of the old nodes
+  pkg_message(c("i"="Predicting old nodes degrees"))
   probj <- predict_old_nodes_degree(graphlist, conf_level2, h)
 
   # Step 3 - Using the above predict the mean graph
+  pkg_message(c("i"="Starting internal function"))
   grout <- predict_graph_internal(graphlist,
                                   formulation,
                                   conf_level1,
