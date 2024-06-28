@@ -20,11 +20,12 @@
 #'gr
 #'
 #'@export
-generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_increase = 0.1){
+generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_increase = 0.1, edges_per_new_node=NA){
   # gr - graph to start with
   # del_edge - between 0 and 1. The proportion of edges to delete
   # new_nodes - if less than 1 then it is a proportion, else it is the number of nodes to add
   # edge_increase - the proportion of edges to add
+  # edges_per_new_node - not used
 
   if(is.null(gr)){
     gr <- igraph::sample_pa(5, directed = FALSE)
@@ -75,7 +76,7 @@ generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_
 #'
 #'@export
 #'@export
-generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_increase = 1){
+generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_increase = 1, edges_per_new_node = 3){
   if(is.null(gr)){
     gr <- igraph::sample_pa(10, directed = FALSE)
   }
@@ -99,16 +100,10 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
   #    }
   #  }
   #}
-  neighbours_of_neighbours_edges <- Matrix::which((adj1 == 0) & (adj2 > 0), arr.ind=TRUE)
+  neighbours_of_neighbours_edges <- Matrix::which((adj2 > 0) & (adj1 == 0), arr.ind=TRUE)
   neighbours_of_neighbours_edges <- neighbours_of_neighbours_edges[neighbours_of_neighbours_edges[,1] < neighbours_of_neighbours_edges[,2],] #get upper triangle
 
   # Add edges
-  #possible_len <- length(possible_edges)/2
-  #num_edges2 <- min(possible_len, edge_increase*2)
-  #edges_to_add_inds <- sort(sample(possible_len, num_edges2))
-  #edges_to_add_inds1 <- edges_to_add_inds*2 -1
-  #edges_to_add_inds2 <- edges_to_add_inds*2
-  #edges_to_add <- possible_edges[c(rbind(edges_to_add_inds1, edges_to_add_inds2))]
   num_non <-NROW(neighbours_of_neighbours_edges)
   edges_to_add <- t(neighbours_of_neighbours_edges[sample(num_non, min(edge_increase, num_non)),])
   gr2 <- gr + igraph::edge(edges_to_add )
@@ -118,7 +113,7 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
   gr3 <- igraph::add_vertices(gr2, new_nodes)
 
   # Add edges to these vertices
-  num_edges3 <- new_nodes*3#edge_increase
+  num_edges3 <- new_nodes*edges_per_new_node
   probs <- igraph::degree(gr2)/sum(igraph::degree(gr2))
   new_node_ids <-  which(igraph::degree(gr3) == 0)
   e1 <- sample(igraph::V(gr2), num_edges3, replace = T, prob = probs )

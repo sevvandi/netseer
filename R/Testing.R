@@ -1,6 +1,6 @@
 library(future)
 
-setup_graph <- function(start_nodes = 1000, del_edges = 100, new_nodes = 50, new_edges = 200, num_iters = 15, mode="linear"){
+setup_graph <- function(start_nodes = 1000, del_edges = 100, new_nodes = 50, new_edges = 200, nn_edges=3, num_iters = 15, mode="linear"){
   graphlist <- list()
   gr <- graphlist[[1]] <- igraph::sample_pa(start_nodes, directed = FALSE)
   if (mode == "linear"){
@@ -14,7 +14,9 @@ setup_graph <- function(start_nodes = 1000, del_edges = 100, new_nodes = 50, new
     gr <-  graph_func(gr, #
                               del_edge = del_edges,
                               new_nodes = new_nodes,
-                              edge_increase = new_edges )
+                              edge_increase = new_edges,
+                              edges_per_new_node = nn_edges
+                      )
     graphlist[[i]] <- gr
   }
   return( graphlist )
@@ -25,12 +27,12 @@ pred_graphlist <- function(graphlist, num_steps = 5){
   return(predicted_graph)
 }
 
-profile_code <- function(start_nodes=1000, new_nodes=30, add_edges=200, del_edges=100, num_iters=15, pred_steps=5,
+profile_code <- function(start_nodes=1000, new_nodes=30, add_edges=200, del_edges=100, nn_edges=3, num_iters=15, pred_steps=5,
                          mode="linear", do_prof=TRUE, interval=0.05, suffix="", verbosity="verbose"){
   #profile the code with Rprof, but don't try to visualise it
   options(netseer.verbose=verbosity)
   pkg_message(c("i"="Generating random graph list"))
-  gl <- setup_graph(start_nodes, del_edges, new_nodes, add_edges, num_iters, mode)
+  gl <- setup_graph(start_nodes, del_edges, new_nodes, add_edges, nn_edges, num_iters, mode)
   start_time <- Sys.time()
   if (do_prof){
     fname <- paste("prof_s", start_nodes, "_nn", new_nodes, "_ae", add_edges, "_de", del_edges, suffix, sep="")
@@ -61,6 +63,7 @@ main <- function(args){
   parser <- optparse::add_option(parser, "--add_nodes", help="Number of nodes to add for each step in the graph list", default=1)
   parser <- optparse::add_option(parser, "--add_edges", help="number of edges to add to the graph each step", default=40)
   parser <- optparse::add_option(parser, "--del_edges", help="number of edges to delete from the graph each step", default=20)
+  parser <- optparse::add_option(parser, "--nn_edges", help="number of edges to add per newly-added node", default=3)
   parser <- optparse::add_option(parser, "--num_iters", help="Number of graphs to add to preceding graph list", default=15)
   parser <- optparse::add_option(parser, "--num_predict", help="Number of steps into the future to use for the prediction", default=5)
   parser <- optparse::add_option(parser, "--grow_mode", help="Whether to grow the input graphs linearly or exponentially ['linear' or 'exponential']", default="linear")
@@ -76,7 +79,7 @@ main <- function(args){
   devtools::load_all()
   #(start_nodes=1000, new_nodes=30, add_edges=200, del_edges=100, num_iters=15, pred_steps=5, do_prof=TRUE, interval=0.01, suffix="", mode="linear")
   running_time <- profile_code(start_nodes=opts$start_nodes, new_nodes=opts$add_nodes, add_edges=opts$add_edges,
-                               del_edges=opts$del_edges, num_iters=opts$num_iters, pred_steps=opts$num_predict,
+                               del_edges=opts$del_edges, nn_edges=opts$nn_edges, num_iters=opts$num_iters, pred_steps=opts$num_predict,
                                mode=opts$grow_mode, do_prof=FALSE, interval=opts$interval, suffix=opts$suffix)
   print(running_time)
 }
