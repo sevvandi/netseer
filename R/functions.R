@@ -572,39 +572,6 @@ diff_metrics <- function(act, pred) {
   )
 }
 
-
-constraint_matrix <- function(gr){
-  # gr is an igraph
-  adj <- igraph::as_adjacency_matrix(gr)
-  num_cols <- dim(adj)[1]*(dim(adj)[1] - 1)/2
-  NN <- num_rows <- dim(adj)[1]
-  constr_mat <- matrix(0, nrow = num_rows, ncol = num_cols)
-  st_col <- 1
-  for(jj in 1:(num_rows-1)){
-    vals <- adj[jj,(jj+1):NN]
-    en_col <- st_col + length(vals) - 1
-    # Update relevant row in the constraint matrix
-    constr_mat[jj, st_col:en_col] <- vals
-    # Fill the diagonal in the submatrix below
-    if(dim(diag(vals))[1] == 0){
-      # Last entry - no matrix, only 1 entry
-      constr_mat[(jj+1):NN,st_col:en_col] <- vals
-    }else{
-      constr_mat[(jj+1):NN,st_col:en_col] <-  diag(vals)
-    }
-
-    # Update st_col
-    st_col <- en_col + 1
-
-  }
-
-  # All edges constraint
-  all_edges <- rep(1, dim(constr_mat)[2])
-  constr_mat <- rbind.data.frame(constr_mat, all_edges)
-
-  constr_mat
-}
-
 sparse_solver_formulation <- function(union_graph, max_degrees, total_edges_constraint){
   #create the LP Solve inputs from a union graph. Each edge in this graph should be considered as a possible component in the predicted graph
   degrees <- igraph::degree(union_graph)
