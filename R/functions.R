@@ -44,7 +44,6 @@ predict_graph_internal <- function(graphlist,
   #                        1 for all except no-edges and some 1s for new
   #                 weights_opt = 4 proportional weights
 
-  debug <- FALSE#TRUE#
   pkg_debug(c("i"=sprintf("Using weights option %d", weights_opt)))
   pkg_message(c("i"="Setting maximum degree constraint"))
   max_degrees <- probj$degree_hi
