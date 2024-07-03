@@ -46,27 +46,42 @@ predict_graph_internal <- function(graphlist,
 
   pkg_debug(c("i"=sprintf("Using weights option %d", weights_opt)))
   pkg_message(c("i"="Setting maximum degree constraint"))
-  max_degrees <- probj$degree_hi
-  if (new_nodes > 0){
-    new_degrees <- predict_new_nodes_degree(graphlist)
-    maximum_degrees <- c(max_degrees, rep(new_degrees, new_nodes)) #the maximum degrees for each vertex in the predicted graph
-  } else {
-    maximum_degrees <- max_degrees
+  degree_constraints <- probj$degree_hi #the maximum degrees for each vertex in the predicted graph
+  total_edges_constraint <- probj$total_edges_upper
+  if (max(new_nodes) > 0){
+    new_nodes_degrees_per_age <- get_new_nodes_degrees(graphlist, h, conf_level2)
+    #new_degrees <- predict_new_nodes_degree(graphlist)
+    new_node_degree_constraints <- new_nodes_edge_constraints(new_nodes, new_nodes_degrees_per_age) #rep(new_degrees, new_nodes)
+    num_new_node_edges <- sum(new_node_degree_constraints)
+    total_edges_constraint <- total_edges_constraint - num_new_node_edges
   }
+  new_nodes <- sum(new_nodes) #set new nodes from nodes per predicted timestep to total number of new nodes
   pkg_message(c("i"="Constructing union graph"))
-  biggr <- construct_union_graph(graphlist, new_nodes, maximum_degrees, rm_verts, weights_opt = weights_opt, weights_param = weights_param)
-  pkg_debug(c("i"=sprintf("The union graph has %d nodes, %d edges, with constraint to use %d edges", igraph::vcount(biggr), igraph::ecount(biggr), probj$total_edges_upper)))
+  biggr <- construct_union_graph(graphlist, new_nodes, degree_constraints, rm_verts, weights_opt = weights_opt, weights_param = weights_param)
+  pkg_debug(c("i"=sprintf("The union graph has %d nodes, %d edges, with constraint to use %d edges", igraph::vcount(biggr), igraph::ecount(biggr), total_edges_constraint)))
   pkg_message(c("i"="Setting sparse solver constraints"))
-  lpsolve_vars <- sparse_solver_formulation(biggr, maximum_degrees, probj$total_edges_upper)
+  lpsolve_vars <- sparse_solver_formulation(biggr, degree_constraints, total_edges_constraint)
   pkg_message(c("i"="Running LPSolve"))
   lpobj <- run_lpsolve_dense(lpsolve_vars$constraint_matrix, lpsolve_vars$objective_function, lpsolve_vars$constraint_rhs, lpsolve_vars$constraint_direction)
   pkg_debug(c("i"=sprintf("LPSolve solution status (should be 0) is %d", lpobj$status) ))
   pkg_message(c("i"="Constructing graph from LPSove Solution"))
   grout <- graph_from_solution(lpobj$solution, lpsolve_vars$used_edges, igraph::vcount(biggr))
+  if (new_nodes > 0){
+    pkg_message(c("i"="Adding new nodes and their edges"))
+    grout <- add_new_nodes_and_edges(grout, new_node_degree_constraints, degree_constraints)
+  }
 
 
+  #print("verbosity options")
+  #print(getOption("netseer.verbose", "quiet"))
+  #print(getOption("netseer.verbose", "quiet") == "debug")
   if (getOption("netseer.verbose", "quiet") == "debug"){
     pkg_debug(c("i"="Checking that constraints are met"))
+    if (new_nodes > 0){
+      maximum_degrees <- c(degree_constraints, new_node_degree_constraints)
+    }  else {
+      maximum_degrees <- degree_constraints
+    }
     check_constraints(grout, maximum_degrees, probj$total_edges_upper)
   }
 
@@ -107,8 +122,9 @@ predict_num_nodes <- function(graphlist, conf_level = 90, h = 1){
 
 
   new_nodes <-  ceiling(next_nodes) - igraph::gorder(graphlist[[NN]])
+  new_nodes <- c(new_nodes[[1]], diff(new_nodes)) #new nodes for each timestep
   list(
-    new_nodes = new_nodes[h],
+    new_nodes = new_nodes,#[h]
     lower_conf = lower_conf,
     upper_conf = upper_conf
   )
@@ -223,50 +239,50 @@ construct_union_graph <- function(graphlist,
     biggr <- igraph::add_edges(biggr, non_edges)
   }
 
-  if(new_nodes > 0){
-    # Add new nodes
-    pkg_message(c("i"="Adding new nodes, and their edges"))
-    biggr <- igraph::add_vertices(biggr, new_nodes)
-    new_vertices <- igraph::V(biggr)[( igraph::gorder(biggr)-new_nodes+1):igraph::gorder(biggr)]
-    # Use only a fixed number of old vertices
-    # Which vertices have the highest degree
-    grlast <- graphlist[[NN]]
-    num_attach <- 10 # attach potential edges to this number of nodes in the union graph, with the highest degrees
-    pkg_debug(c("i"=sprintf("Attaching possible edges to the new nodes and the top %d existing nodes, by degree", num_attach)))
-    if(igraph::vcount(grlast) > num_attach){
-      old_vertices <- igraph::V(biggr)[order(igraph::degree(grlast), decreasing = TRUE)[1:num_attach]]
-    }else{
-      old_vertices <- igraph::V(biggr)[1:(igraph::gorder(biggr)-new_nodes)]
-    }
-
-    new_deg2 <- min(2*new_deg, igraph::vcount(biggr))
-    verts <- order(igraph::degree(biggr), decreasing = TRUE)[1:new_deg2]
-
-    if((weights_opt == 1)|(weights_opt == 2)){
-      # Binary weights - new nodes connected to all old nodes
-      # Add new edges from new nodes to all old nodes
-      possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
-    }else if(weights_opt == 3){
-      # Binary weights - new nodes connected to most connected old nodes
-      # Add new edges from new nodes to mostly connected vertices
-      possible_edges <- c(rbind(rep(verts, new_nodes), rep(new_vertices, each = length(verts)) ))
-    }else if(weights_opt == 4|weights_opt == 5|weights_opt == 6|weights_opt == 7){
-      # Proportional weights - new nodes connected to all old nodes
-      # But the weights will be much smaller
-      possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
-      new_weights0 <- igraph::degree(biggr)[old_vertices]/(sum(igraph::degree(biggr)[old_vertices]))
-      new_weights <- quantile(igraph::E(biggr)$weight, probs = new_weights0)
-      new_weights <- rep(new_weights, new_nodes )
-    }
-    if(weights_opt == 4|weights_opt == 5|weights_opt == 6|weights_opt == 7){
-      biggr <- biggr %>%
-        igraph::add_edges(possible_edges,weight = new_weights)
-    }else{
-      biggr <- biggr %>%
-        igraph::add_edges(possible_edges)
-    }
-
-  }
+  # if(new_nodes > 0){
+  #   # Add new nodes
+  #   pkg_message(c("i"="Adding new nodes, and their edges"))
+  #   biggr <- igraph::add_vertices(biggr, new_nodes)
+  #   new_vertices <- igraph::V(biggr)[( igraph::gorder(biggr)-new_nodes+1):igraph::gorder(biggr)]
+  #   # Use only a fixed number of old vertices
+  #   # Which vertices have the highest degree
+  #   grlast <- graphlist[[NN]]
+  #   num_attach <- 10 # attach potential edges to this number of nodes in the union graph, with the highest degrees
+  #   pkg_debug(c("i"=sprintf("Attaching possible edges to the new nodes and the top %d existing nodes, by degree", num_attach)))
+  #   if(igraph::vcount(grlast) > num_attach){
+  #     old_vertices <- igraph::V(biggr)[order(igraph::degree(grlast), decreasing = TRUE)[1:num_attach]]
+  #   }else{
+  #     old_vertices <- igraph::V(biggr)[1:(igraph::gorder(biggr)-new_nodes)]
+  #   }
+  #
+  #   new_deg2 <- min(2*new_deg, igraph::vcount(biggr))
+  #   verts <- order(igraph::degree(biggr), decreasing = TRUE)[1:new_deg2]
+  #
+  #   if((weights_opt == 1)|(weights_opt == 2)){
+  #     # Binary weights - new nodes connected to all old nodes
+  #     # Add new edges from new nodes to all old nodes
+  #     possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
+  #   }else if(weights_opt == 3){
+  #     # Binary weights - new nodes connected to most connected old nodes
+  #     # Add new edges from new nodes to mostly connected vertices
+  #     possible_edges <- c(rbind(rep(verts, new_nodes), rep(new_vertices, each = length(verts)) ))
+  #   }else if(weights_opt == 4|weights_opt == 5|weights_opt == 6|weights_opt == 7){
+  #     # Proportional weights - new nodes connected to all old nodes
+  #     # But the weights will be much smaller
+  #     possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
+  #     new_weights0 <- igraph::degree(biggr)[old_vertices]/(sum(igraph::degree(biggr)[old_vertices]))
+  #     new_weights <- quantile(igraph::E(biggr)$weight, probs = new_weights0)
+  #     new_weights <- rep(new_weights, new_nodes )
+  #   }
+  #   if(weights_opt == 4|weights_opt == 5|weights_opt == 6|weights_opt == 7){
+  #     biggr <- biggr %>%
+  #       igraph::add_edges(possible_edges,weight = new_weights)
+  #   }else{
+  #     biggr <- biggr %>%
+  #       igraph::add_edges(possible_edges)
+  #   }
+  #
+  # }
 
   total_edges <- igraph::ecount(biggr)
   new_edges <- total_edges - existing_edges
@@ -438,6 +454,87 @@ predict_new_nodes_degree <- function(graphlist){
   new_deg
 }
 
+get_new_nodes_degrees <- function(graphlist, h, confidence_level){
+  num_graphs <- length(graphlist)
+  node_counts <- sapply(graphlist, igraph::vcount)
+  num_new_nodes <- pmax(diff(node_counts), 0) #number of new nodes each iteration of the graphlist
+  new_nodes <- t(mapply(function(graph, nn) c((igraph::vcount(graph)-nn+1),igraph::vcount(graph)), graph=graphlist[-1], nn=num_new_nodes))
+  print(node_counts)
+  print(num_new_nodes)
+  print(new_nodes)
+
+  total_entries <- ((num_graphs - 1)*(num_graphs))/2
+  new_edge_counts <- matrix(data=0, nrow=total_entries, ncol=3)
+  colnames(new_edge_counts) <- c("time", "age", "count")
+  out_pos <- 1
+  for (i in 2:num_graphs){
+    degrees <- igraph::degree(graphlist[[i]])
+    #print(sprintf("new nodes values for i=%d", i))
+    #this_new_nodes <- new_nodes[1:i-1,]
+    #print(this_new_nodes)
+    #print(dim(this_new_nodes))
+    average_degrees <- apply(new_nodes[1:i-1,,drop=FALSE], 1,
+                              FUN=function(inds){
+                                mean(degrees[inds[1]:inds[2]])
+                              })
+    #print(sprintf("graph %d average degrees:", i))
+    #print(average_degrees)
+    this_new_entries <- length(average_degrees)
+    out_idxs <- out_pos:(out_pos+this_new_entries-1)
+    #print("out idxs")
+    #print(out_idxs)
+    #print("this new entries -> age")
+    #print(this_new_entries:1)
+    new_edge_counts[out_idxs,1] <- i
+    new_edge_counts[out_idxs,2] <- this_new_entries:1
+    new_edge_counts[out_idxs,3] <- average_degrees
+    out_pos <- out_pos + this_new_entries
+  }
+  #new nodes edge counts as tsibble
+  new_node_ec_ts <- as.data.frame(new_edge_counts) %>% tsibble::as_tsibble(key=age, index=time)
+  mdl <- fabletools::model(new_node_ec_ts, arima=fable::ARIMA(count))
+  fc <- fabletools::forecast(mdl, h=h)
+  hilo <- fabletools::hilo(fc, level=confidence_level)#confidence_
+  this_timestep <- filter(hilo, time==(num_graphs + h))
+  colnames(this_timestep)[NCOL(this_timestep)] <- "conf"
+  degree_map <- matrix(data=0, nrow=NROW(this_timestep), ncol=2)
+  #print("made degree map")
+  #print(degree_map)
+  degree_map[,1] <- this_timestep$age
+  #print("set column 1")
+  #print(degree_map)
+  #print("column 2 input:")
+  #print(ceiling(this_timestep$conf$upper))
+  degree_map[,2] <- ceiling(this_timestep$conf$upper)
+  #print("degree map")
+  #print(degree_map)
+  #breakpoint
+  degree_map
+}
+
+new_nodes_edge_constraints <- function(new_nodes_per_timestep, new_nodes_degrees_per_age){
+  total_new_nodes <- sum(new_nodes_per_timestep)
+  current_time_step <- length(new_nodes_per_timestep)
+  new_nodes_degrees <- rep(0,total_new_nodes)
+  out_pos <- 1
+  for (i in 1:current_time_step){
+    age <- min(current_time_step - i + 1, NROW(new_nodes_degrees_per_age))
+    degree_for_age <- new_nodes_degrees_per_age[new_nodes_degrees_per_age[, 1] == (age), 2]
+    nodes_added_this_timestep <- new_nodes_per_timestep[[i]]
+    new_nodes_degrees[out_pos:(out_pos+nodes_added_this_timestep)] <- degree_for_age
+    out_pos <- out_pos + nodes_added_this_timestep
+  }
+    #sapply(1:length(new_nodes_per_timestep),
+    #                         FUN=function(i){
+    #                           nn
+    #                           degrees
+    #                           rep(degrees, nn)
+    #                           })
+  print("new nodes degrees:")
+  print(c(new_nodes_degrees))
+  #breakpoint
+  new_nodes_degrees
+}
 
 run_lpsolve <- function(f_con, f_obj, f_rhs, signs){
   f_dir <- signs
@@ -632,12 +729,34 @@ graph_from_solution <- function(solution, edge_list, num_nodes){
   solution_graph
 }
 
+add_new_nodes_and_edges <- function(graph, new_nodes_degrees, existing_degree_constraints){
+  print(new_nodes_degrees)
+  spare_degrees <- existing_degree_constraints - igraph::degree(graph)
+  num_nodes <- igraph::vcount(graph)
+  num_new_nodes <- length(new_nodes_degrees)
+  graph <- igraph::add_vertices(graph, num_new_nodes)
+  for (i in 1:length(new_nodes_degrees)){
+    this_node <- num_nodes + i
+    this_connections <- sample(num_nodes, new_nodes_degrees[[i]], prob=spare_degrees)
+    new_edges <- c(rbind(rep(this_node, new_nodes_degrees[[i]]), this_connections))
+    print(new_edges)
+    graph <- igraph::add_edges(graph, new_edges)
+    spare_degrees[this_connections] <- spare_degrees[this_connections] - 1
+  }
+  graph
+}
+
 check_constraints <-function(graph, degree_constraints, total_edges_constraint){
   #check whether or not a predicted graph meets the given constraints - uses the rhs of the constraints
   num_edges <- length(degree_constraints)
   graph_degrees <- igraph::degree(graph)
-  same_degrees <- graph_degrees <= degree_constraints
   correct <- TRUE
+  if (length(graph_degrees) != length(degree_constraints)){
+    pkg_message(sprintf("x"="The graph has %d nodes, but there are %d degree constraints", length(graph_degrees), length(degree_constraints)))
+    correct <- FALSE
+  }
+
+  same_degrees <- graph_degrees <= degree_constraints
   if (!all(same_degrees)) {
     correct <- FALSE
     for (i in 1:num_edges){
@@ -649,7 +768,7 @@ check_constraints <-function(graph, degree_constraints, total_edges_constraint){
   actual_num_edges <- igraph::ecount(graph)
   if (total_edges_constraint != actual_num_edges){
     correct <- FALSE
-    pkg_debug(c("x"=sprintf("The graph has %d edges, was expecting %d edges", actual_num_edges, total_edges_constraint)))
+    pkg_message(c("x"=sprintf("The graph has %d edges, was expecting %d edges", actual_num_edges, total_edges_constraint)))
   }
   if (correct){
     pkg_debug(c("i"="All constraints met") )

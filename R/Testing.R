@@ -80,7 +80,7 @@ main <- function(args){
   #(start_nodes=1000, new_nodes=30, add_edges=200, del_edges=100, num_iters=15, pred_steps=5, do_prof=TRUE, interval=0.01, suffix="", mode="linear")
   running_time <- profile_code(start_nodes=opts$start_nodes, new_nodes=opts$add_nodes, add_edges=opts$add_edges,
                                del_edges=opts$del_edges, nn_edges=opts$nn_edges, num_iters=opts$num_iters, pred_steps=opts$num_predict,
-                               mode=opts$grow_mode, do_prof=FALSE, interval=opts$interval, suffix=opts$suffix)
+                               mode=opts$grow_mode, do_prof=FALSE, interval=opts$interval, suffix=opts$suffix, verbosity=opts$verbosity)
   print(running_time)
 }
 
