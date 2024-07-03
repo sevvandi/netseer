@@ -22,7 +22,6 @@ predict_graph_internal <- function(graphlist,
                                    formulation,
                                    conf_level1 = NULL,
                                    conf_level2 = 90,
-                                   dense_opt = 2,
                                    weights_opt = 2,
                                    weights_param = 0.25,
                                    h = 1,
@@ -45,13 +44,12 @@ predict_graph_internal <- function(graphlist,
   #                 weights_opt = 4 proportional weights
 
   pkg_debug(c("i"=sprintf("Using weights option %d", weights_opt)))
-  pkg_message(c("i"="Setting maximum degree constraint"))
+  pkg_message(c("i"="Setting maximum degrees constraint"))
   degree_constraints <- probj$degree_hi #the maximum degrees for each vertex in the predicted graph
   total_edges_constraint <- probj$total_edges_upper
   if (max(new_nodes) > 0){
     new_nodes_degrees_per_age <- get_new_nodes_degrees(graphlist, h, conf_level2)
-    #new_degrees <- predict_new_nodes_degree(graphlist)
-    new_node_degree_constraints <- new_nodes_edge_constraints(new_nodes, new_nodes_degrees_per_age) #rep(new_degrees, new_nodes)
+    new_node_degree_constraints <- new_nodes_edge_constraints(new_nodes, new_nodes_degrees_per_age)
     num_new_node_edges <- sum(new_node_degree_constraints)
     total_edges_constraint <- total_edges_constraint - num_new_node_edges
   }
@@ -72,9 +70,6 @@ predict_graph_internal <- function(graphlist,
   }
 
 
-  #print("verbosity options")
-  #print(getOption("netseer.verbose", "quiet"))
-  #print(getOption("netseer.verbose", "quiet") == "debug")
   if (getOption("netseer.verbose", "quiet") == "debug"){
     pkg_debug(c("i"="Checking that constraints are met"))
     if (new_nodes > 0){
@@ -455,13 +450,11 @@ predict_new_nodes_degree <- function(graphlist){
 }
 
 get_new_nodes_degrees <- function(graphlist, h, confidence_level){
+  #get the degree that new nodes should have, based on their age
   num_graphs <- length(graphlist)
   node_counts <- sapply(graphlist, igraph::vcount)
   num_new_nodes <- pmax(diff(node_counts), 0) #number of new nodes each iteration of the graphlist
   new_nodes <- t(mapply(function(graph, nn) c((igraph::vcount(graph)-nn+1),igraph::vcount(graph)), graph=graphlist[-1], nn=num_new_nodes))
-  print(node_counts)
-  print(num_new_nodes)
-  print(new_nodes)
 
   total_entries <- ((num_graphs - 1)*(num_graphs))/2
   new_edge_counts <- matrix(data=0, nrow=total_entries, ncol=3)
@@ -469,50 +462,34 @@ get_new_nodes_degrees <- function(graphlist, h, confidence_level){
   out_pos <- 1
   for (i in 2:num_graphs){
     degrees <- igraph::degree(graphlist[[i]])
-    #print(sprintf("new nodes values for i=%d", i))
-    #this_new_nodes <- new_nodes[1:i-1,]
-    #print(this_new_nodes)
-    #print(dim(this_new_nodes))
     average_degrees <- apply(new_nodes[1:i-1,,drop=FALSE], 1,
                               FUN=function(inds){
                                 mean(degrees[inds[1]:inds[2]])
                               })
-    #print(sprintf("graph %d average degrees:", i))
-    #print(average_degrees)
     this_new_entries <- length(average_degrees)
     out_idxs <- out_pos:(out_pos+this_new_entries-1)
-    #print("out idxs")
-    #print(out_idxs)
-    #print("this new entries -> age")
-    #print(this_new_entries:1)
     new_edge_counts[out_idxs,1] <- i
     new_edge_counts[out_idxs,2] <- this_new_entries:1
     new_edge_counts[out_idxs,3] <- average_degrees
     out_pos <- out_pos + this_new_entries
   }
-  #new nodes edge counts as tsibble
+  #new nodes edge counts as a tsibble dataframe
   new_node_ec_ts <- as.data.frame(new_edge_counts) %>% tsibble::as_tsibble(key=age, index=time)
   mdl <- fabletools::model(new_node_ec_ts, arima=fable::ARIMA(count))
   fc <- fabletools::forecast(mdl, h=h)
-  hilo <- fabletools::hilo(fc, level=confidence_level)#confidence_
+  hilo <- fabletools::hilo(fc, level=confidence_level)
   this_timestep <- filter(hilo, time==(num_graphs + h))
   colnames(this_timestep)[NCOL(this_timestep)] <- "conf"
   degree_map <- matrix(data=0, nrow=NROW(this_timestep), ncol=2)
-  #print("made degree map")
-  #print(degree_map)
   degree_map[,1] <- this_timestep$age
-  #print("set column 1")
-  #print(degree_map)
-  #print("column 2 input:")
-  #print(ceiling(this_timestep$conf$upper))
-  degree_map[,2] <- ceiling(this_timestep$conf$upper)
-  #print("degree map")
-  #print(degree_map)
-  #breakpoint
+  degree_map[,2] <- ceiling(this_timestep$conf$upper) #need to use $ to get the data, [] doesn't work
   degree_map
 }
 
 new_nodes_edge_constraints <- function(new_nodes_per_timestep, new_nodes_degrees_per_age){
+  #get the degree constraints for new nodes, based on when they should be added to the predicted graph
+  #new_nodes_per_timestep is the number of new nodes that should be added at each time step, up to the predicted one
+  #new_nodes_degrees_per_age is a 2-column matrix of (age, degree for age) pairs
   total_new_nodes <- sum(new_nodes_per_timestep)
   current_time_step <- length(new_nodes_per_timestep)
   new_nodes_degrees <- rep(0,total_new_nodes)
@@ -524,15 +501,6 @@ new_nodes_edge_constraints <- function(new_nodes_per_timestep, new_nodes_degrees
     new_nodes_degrees[out_pos:(out_pos+nodes_added_this_timestep)] <- degree_for_age
     out_pos <- out_pos + nodes_added_this_timestep
   }
-    #sapply(1:length(new_nodes_per_timestep),
-    #                         FUN=function(i){
-    #                           nn
-    #                           degrees
-    #                           rep(degrees, nn)
-    #                           })
-  print("new nodes degrees:")
-  print(c(new_nodes_degrees))
-  #breakpoint
   new_nodes_degrees
 }
 
@@ -730,7 +698,7 @@ graph_from_solution <- function(solution, edge_list, num_nodes){
 }
 
 add_new_nodes_and_edges <- function(graph, new_nodes_degrees, existing_degree_constraints){
-  print(new_nodes_degrees)
+  #add the new nodes, and the edges that should be attached to the new nodes
   spare_degrees <- existing_degree_constraints - igraph::degree(graph)
   num_nodes <- igraph::vcount(graph)
   num_new_nodes <- length(new_nodes_degrees)
@@ -739,7 +707,6 @@ add_new_nodes_and_edges <- function(graph, new_nodes_degrees, existing_degree_co
     this_node <- num_nodes + i
     this_connections <- sample(num_nodes, new_nodes_degrees[[i]], prob=spare_degrees)
     new_edges <- c(rbind(rep(this_node, new_nodes_degrees[[i]]), this_connections))
-    print(new_edges)
     graph <- igraph::add_edges(graph, new_edges)
     spare_degrees[this_connections] <- spare_degrees[this_connections] - 1
   }
