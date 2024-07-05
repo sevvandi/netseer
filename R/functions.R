@@ -1,3 +1,4 @@
+library(future)
 # THIS FILE DOES THE FOLLOWING
 # OPTIMIZATION PROBLEM = 1st ONE (0 \leq Su \leq f_u(d)
 # IMPLEMENTATION DETAILS: dense matrix in lpSolve and
@@ -47,7 +48,8 @@ predict_graph_internal <- function(graphlist,
   pkg_message(c("i"="Setting maximum degrees constraint"))
   degree_constraints <- probj$degree_hi #the maximum degrees for each vertex in the predicted graph
   total_edges_constraint <- probj$total_edges_upper
-  if (max(new_nodes) > 0){
+  if (sum(new_nodes) > 0){
+    #determine the degree(s) that the new nodes should have
     new_nodes_degrees_per_age <- get_new_nodes_degrees(graphlist, h, conf_level2)
     new_node_degree_constraints <- new_nodes_edge_constraints(new_nodes, new_nodes_degrees_per_age)
     num_new_node_edges <- sum(new_node_degree_constraints)
@@ -118,6 +120,23 @@ predict_num_nodes <- function(graphlist, conf_level = 90, h = 1){
 
   new_nodes <-  ceiling(next_nodes) - igraph::gorder(graphlist[[NN]])
   new_nodes <- c(new_nodes[[1]], diff(new_nodes)) #new nodes for each timestep
+  #handle the possibility of the number of nodes being reduces at some time steps, and being increased at later steps
+  #we prefer to handle "removed" nodes as nodes with zero edges attached
+  removed_nodes <- 0
+  for (i in 1:length(new_nodes)){
+    if (new_nodes[[i]] < 0){
+      removed_nodes <- removed_nodes + abs(new_nodes[[i]])
+      new_nodes[[i]] <- 0
+      next
+    }
+    if (removed_nodes <= 0) next
+    this_removed_nodes <- min(removed_nodes, new_nodes[[i]])
+    removed_nodes <- removed_nodes - this_removed_nodes
+    new_nodes[[i]] <- new_nodes[[i]] - this_removed_nodes
+  }
+  if (removed_nodes > 0){
+    new_nodes[[length(new_nodes)]] <- new_nodes[[length(new_nodes)]] - removed_nodes
+  }
   list(
     new_nodes = new_nodes,#[h]
     lower_conf = lower_conf,
