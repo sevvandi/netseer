@@ -20,12 +20,11 @@
 #'gr
 #'
 #'@export
-generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_increase = 0.1, edges_per_new_node=NA){
+generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_increase = 0.1){
   # gr - graph to start with
   # del_edge - between 0 and 1. The proportion of edges to delete
   # new_nodes - if less than 1 then it is a proportion, else it is the number of nodes to add
   # edge_increase - the proportion of edges to add
-  # edges_per_new_node - not used
 
   if(is.null(gr)){
     gr <- igraph::sample_pa(5, directed = FALSE)
@@ -66,6 +65,8 @@ generate_graph_exp <- function(gr = NULL, del_edge = 0.1, new_nodes = 0.1, edge_
 #'set to \code{1}.
 #'@param edge_increase The number of edges added to the input graph. Default
 #'set to \code{1}.
+#'@param edges_per_new_node The number of edges added to the new nodes. Default
+#'set to \code{3}.
 #'
 #'@return A graph.
 #'
@@ -81,7 +82,6 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
     gr <- igraph::sample_pa(10, directed = FALSE)
   }
 
-
   num_edges <- igraph::ecount(gr)
   edges <- igraph::E(gr)
 
@@ -92,14 +92,7 @@ generate_graph_linear <- function(gr = NULL, del_edge = 1, new_nodes = 1, edge_i
   # Possible edges to add
   adj1 <- igraph::as_adjacency_matrix(gr)
   adj2 <- adj1 %*%adj1
-  #possible_edges <- c()
-  #for(ll in 1:(NROW(adj2)-1)){
-  #  for(mm in (ll+1):NCOL(adj2)){
-  #    if((adj2[ll, mm] > 0) & (adj1[ll, mm] == 0)){
-  #      possible_edges <- c(possible_edges, c(ll, mm))
-  #    }
-  #  }
-  #}
+
   neighbours_of_neighbours_edges <- Matrix::which((adj2 > 0) & (adj1 == 0), arr.ind=TRUE)
   neighbours_of_neighbours_edges <- neighbours_of_neighbours_edges[neighbours_of_neighbours_edges[,1] < neighbours_of_neighbours_edges[,2],] #get upper triangle
 

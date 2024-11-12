@@ -37,7 +37,6 @@
 #' If If \code{conf_level1} is \code{NULL}, only the mean predicted graph is returned.
 #'
 #' @examples
-#' library(igraph)
 #' set.seed(2024)
 #' edge_increase_val <- new_nodes_val <- del_edge_val <- 0.1
 #' graphlist <- list()
@@ -51,6 +50,10 @@
 #' }
 #' grpred <- predict_graph(graphlist[1:15], conf_level2 = 90, weights_opt = 6)
 #' grpred
+#'  \dontshow{
+#'   # R CMD check: make sure any open connections are closed afterward
+#'   if (!inherits(future::plan(), "sequential")) future::plan(sequential)
+#'   }
 #'
 #' @importFrom dplyr pull summarize mutate group_by n full_join filter arrange
 #' @importFrom dplyr left_join select rename '%>%' if_else distinct

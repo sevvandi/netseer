@@ -1,7 +1,7 @@
 Package: netseer
 Type: Package
 Title: Graph Prediction from a Graph Time Series
-Version: 0.1.0.1
+Version: 0.1.1
 Authors@R: c(
   person("Sevvandi", "Kandanaarachchi", email = "sevvandik@gmail.com",
   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0337-0395")))
@@ -19,15 +19,17 @@ Imports:
     dplyr,
     fable,
     fabletools,
+    forecast,
+    future,
     igraph,
     lpSolve,
     Matrix,
     rlang,
     stats,
     tibble,
-    tidyr,
     tsibble
 Suggests: 
     feasts,
+    nnet,
     urca
 URL: https://sevvandi.github.io/netseer/

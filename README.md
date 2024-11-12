@@ -10,8 +10,8 @@
 
 The goal of netseer is to predict the graph structure including new
 nodes and edges from a time series of graphs. The methodology is
-explained in the preprint (Kandanaarachchi 2024). We will illustrate an
-example in this vignette.
+explained in the preprint (Sevvandi Kandanaarachchi 2024). We will
+illustrate an example in this vignette.
 
 ## Installation
 
@@ -86,17 +86,16 @@ predict the graph at the next time point.
 grpred <- predict_graph(graphlist[1:15],h = 1)
 #> Warning: 2 errors (1 unique) encountered for arima
 #> [2] missing value where TRUE/FALSE needed
-#> Joining with `by = join_by(vertex)`
-#> Joining with `by = join_by(From, To)`
-#> Joining with `by = join_by(original)`
-#> Joining with `by = join_by(original)`
+#> Registered S3 method overwritten by 'quantmod':
+#>   method            from
+#>   as.zoo.data.frame zoo
 grpred
 #> $graph_mean
-#> IGRAPH bd2d240 U--- 34 24 -- 
-#> + edges from bd2d240:
-#>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
-#> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
-#> [21] 11--19 13--15 17--19 30--34
+#> IGRAPH bb1ab36 U--- 35 23 -- 
+#> + edges from bb1ab36:
+#>  [1] 17--19 11--19 10--11  9--20  5--12  5--10  3--17  3-- 9  3-- 6  2--21
+#> [11]  2-- 4  2-- 3  1--25  1--14  1-- 6  1-- 5  1-- 4  1-- 2  7--31 10--32
+#> [21] 20--33 14--34 20--35
 #> 
 #> $graph_lower
 #> NULL
@@ -111,9 +110,9 @@ plot(grpred$graph_mean)
 
 ``` r
 ecount(grpred$graph_mean)
-#> [1] 24
+#> [1] 23
 vcount(grpred$graph_mean)
-#> [1] 34
+#> [1] 35
 ```
 
 ### Predicting the graph at 2 time steps ahead
@@ -124,17 +123,13 @@ Now let us predict the graph at 2 time steps ahead with $h=2$.
 grpred2 <- predict_graph(graphlist[1:15], h = 2)
 #> Warning: 2 errors (1 unique) encountered for arima
 #> [2] missing value where TRUE/FALSE needed
-#> Joining with `by = join_by(vertex)`
-#> Joining with `by = join_by(From, To)`
-#> Joining with `by = join_by(original)`
-#> Joining with `by = join_by(original)`
 grpred2
 #> $graph_mean
-#> IGRAPH 94fa600 U--- 37 27 -- 
-#> + edges from 94fa600:
-#>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
-#> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
-#> [21] 11--19 13--15 17--19 30--34 30--35 30--36 30--37
+#> IGRAPH 35d87d4 U--- 38 26 -- 
+#> + edges from 35d87d4:
+#>  [1] 10--11  9--20  5--12  5--10  3--17  3-- 9  2--21  2-- 4  2-- 3  1--14
+#> [11]  1-- 6  1-- 5  1-- 4  1-- 2 19--31 17--31 17--32  7--32 11--33 28--33
+#> [21] 16--34 10--34 16--35  6--36  3--37 12--38
 #> 
 #> $graph_lower
 #> NULL
@@ -149,9 +144,9 @@ plot(grpred2$graph_mean)
 
 ``` r
 ecount(grpred2$graph_mean)
-#> [1] 27
+#> [1] 26
 vcount(grpred2$graph_mean)
-#> [1] 37
+#> [1] 38
 ```
 
 We see the predicted graph at $h=2$ has more vertices and edges than the
@@ -167,17 +162,13 @@ predictions are less accurate. This is with everything, not just graphs.
 grpred3 <- predict_graph(graphlist[1:15], h = 3)
 #> Warning: 2 errors (1 unique) encountered for arima
 #> [2] missing value where TRUE/FALSE needed
-#> Joining with `by = join_by(vertex)`
-#> Joining with `by = join_by(From, To)`
-#> Joining with `by = join_by(original)`
-#> Joining with `by = join_by(original)`
 grpred3
 #> $graph_mean
-#> IGRAPH d9abc19 U--- 40 29 -- 
-#> + edges from d9abc19:
-#>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--11  1--14  1--25  2-- 3  2-- 4  2--17
-#> [11]  2--21  3-- 5  3-- 6  3-- 9  3--17  4-- 7  5--10  5--12  9--20 10--11
-#> [21] 11--19 13--15 17--19 30--35 30--36 30--37 30--38 30--39 30--40
+#> IGRAPH 2ac93a1 U--- 41 29 -- 
+#> + edges from 2ac93a1:
+#>  [1] 10--11  5--10  3--17  3-- 9  2-- 4  2-- 3  1--14  1-- 6  1-- 5  1-- 4
+#> [11]  1-- 2 21--31 20--31 19--32  3--32 19--33  2--33  9--34 11--34 17--35
+#> [21] 16--35 12--36  7--36  9--37 11--37 15--38 15--39 29--40 19--41
 #> 
 #> $graph_lower
 #> NULL
@@ -194,7 +185,7 @@ plot(grpred3$graph_mean)
 ecount(grpred3$graph_mean)
 #> [1] 29
 vcount(grpred3$graph_mean)
-#> [1] 40
+#> [1] 41
 ```
 
 # References
@@ -203,8 +194,8 @@ vcount(grpred3$graph_mean)
 
 <div id="ref-kand2024graphpred" class="csl-entry">
 
-Kandanaarachchi, Sevvandi. 2024. “Predicting the Structure of Dynamic
-Graphs.” <https://arxiv.org/abs/2401.04280>.
+Sevvandi Kandanaarachchi, Stefan Westerlund, Ziqi Xu. 2024. “Predicting
+the Structure of Dynamic Graphs.” <https://arxiv.org/abs/2401.04280>.
 
 </div>
 

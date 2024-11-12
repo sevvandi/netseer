@@ -43,6 +43,7 @@ predict_graph_internal <- function(graphlist,
   #                 weights_opt = 3 is binary weights (more selective version)
   #                        1 for all except no-edges and some 1s for new
   #                 weights_opt = 4 proportional weights
+  rm_verts <- NULL
 
   pkg_debug(c("i"=sprintf("Using weights option %d", weights_opt)))
   pkg_message(c("i"="Setting maximum degree constraint"))
@@ -323,7 +324,7 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
     fbm <-fabletools::model(.data=dfmerge, arima = fable::ARIMA(degree),
                       naive = fable::NAIVE(degree))
     fc <- fabletools::forecast(object=fbm, h = h)
-    fit <- full_join(fc, dffreq, by="vertex")
+    fit <- dplyr::full_join(fc, dffreq, by="vertex")
 
   # Fit ARIMA for total edges
   pkg_message(c("i"="Running fabletools on total number of edges"))
@@ -394,6 +395,9 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   total_edges_lower <- as.integer(fit_total$lower) #forecast gives these as numeric/float values, so we need to convert them to integers
   total_edges_upper <- as.integer(fit_total$upper)
   total_edges_mean <- as.integer(fit_total$mean)
+
+  ## Explicitly close multisession workers by switching plan
+  future::plan(future::sequential)
 
 
   list(

@@ -8,7 +8,8 @@ generate_graph_linear(
   gr = NULL,
   del_edge = 1,
   new_nodes = 1,
-  edge_increase = 1
+  edge_increase = 1,
+  edges_per_new_node = 3
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ set to \code{1}.}
 
 \item{edge_increase}{The number of edges added to the input graph. Default
 set to \code{1}.}
+
+\item{edges_per_new_node}{The number of edges added to the new nodes. Default
+set to \code{3}.}
 }
 \value{
 A graph.
