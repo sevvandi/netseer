@@ -401,10 +401,10 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   total_edges_upper <- as.integer(fit_total$upper)
   total_edges_mean <- as.integer(fit_total$mean)
 
-  ## Added to tone down the edges - top down hierarchical forecasting
-  f_rhs_mean <- ceiling(f_rhs_mean/sum(f_rhs_mean)*total_edges_mean)
-  f_rhs_up <- ceiling(f_rhs_up/sum(f_rhs_up)*total_edges_upper)
-  f_rhs_lo <- ceiling(f_rhs_lo/sum(f_rhs_lo)*total_edges_lower)
+  # ## Added to tone down the edges - top down hierarchical forecasting
+  # f_rhs_mean <- 2*(f_rhs_mean/sum(f_rhs_mean)*total_edges_mean)
+  # f_rhs_up <- 2*(f_rhs_up/sum(f_rhs_up)*total_edges_upper)
+  # f_rhs_lo <- 2*(f_rhs_lo/sum(f_rhs_lo)*total_edges_lower)
 
 
   ## Explicitly close multisession workers by switching plan
