@@ -184,7 +184,7 @@ construct_union_graph <- function(graphlist,
       }
     }
     igraph::E(biggr)$weight <- igraph::E(biggr)$weight/max(igraph::E(biggr)$weight)
-  }else if(weights_opt == 7){
+  }else if(weights_opt %in% c(7, 8)){
     # This set of weights give 1 to the last time step and 0 to the rest
     biggr <- graphlist[[NN]]
     igraph::E(biggr)$weight <- 1
@@ -205,7 +205,7 @@ construct_union_graph <- function(graphlist,
   # Weights for new edges according to quantile
   if(weights_opt %in% c(4,5,6)){
     new_weights <- quantile(igraph::E(biggr)$weight, probs = weights_param)
-  }else if(weights_opt == 7){
+  }else if(weights_opt %in% c(7, 8)){
     new_weights <- weights_param
   }
 
@@ -219,6 +219,8 @@ construct_union_graph <- function(graphlist,
 
   if(weights_opt %in% c(4,5,6,7)){
     biggr <- igraph::add_edges(biggr, non_edges, weight = 2*new_weights)
+  }else if(weights_opt == 8){
+    biggr <- igraph::add_edges(biggr, non_edges, weight = new_weights)
   }else{
     # weights_opt 1, 2, 3
     biggr <- igraph::add_edges(biggr, non_edges)
@@ -258,8 +260,11 @@ construct_union_graph <- function(graphlist,
       new_weights0 <- igraph::degree(biggr)[old_vertices]/(sum(igraph::degree(biggr)[old_vertices]))
       new_weights <- quantile(igraph::E(biggr)$weight, probs = new_weights0)
       new_weights <- rep(new_weights, new_nodes )
+    }else if(weights_opt == 8){
+      possible_edges <- c(rbind(rep(old_vertices, new_nodes), rep(new_vertices, each = length(old_vertices)) ))
+      new_weights <- rep(new_weights, new_nodes*length(old_vertices) )
     }
-    if(weights_opt == 4|weights_opt == 5|weights_opt == 6|weights_opt == 7){
+    if(weights_opt == 4|weights_opt == 5|weights_opt == 6|weights_opt == 7|weights_opt == 8){
       biggr <- biggr %>%
         igraph::add_edges(possible_edges,weight = new_weights)
     }else{
@@ -395,6 +400,12 @@ predict_old_nodes_degree <- function(graphlist, conf_level2, h){
   total_edges_lower <- as.integer(fit_total$lower) #forecast gives these as numeric/float values, so we need to convert them to integers
   total_edges_upper <- as.integer(fit_total$upper)
   total_edges_mean <- as.integer(fit_total$mean)
+
+  ## Added to tone down the edges - top down hierarchical forecasting
+  f_rhs_mean <- ceiling(f_rhs_mean/sum(f_rhs_mean)*total_edges_mean)
+  f_rhs_up <- ceiling(f_rhs_up/sum(f_rhs_up)*total_edges_upper)
+  f_rhs_lo <- ceiling(f_rhs_lo/sum(f_rhs_lo)*total_edges_lower)
+
 
   ## Explicitly close multisession workers by switching plan
   future::plan(future::sequential)
