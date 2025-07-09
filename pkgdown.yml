@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   netseer: netseer.html
-last_built: 2025-07-09T08:18Z
+last_built: 2025-07-09T08:34Z
 urls:
   reference: https://sevvandi.github.io/netseer/reference
   article: https://sevvandi.github.io/netseer/articles
