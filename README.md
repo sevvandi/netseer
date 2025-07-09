@@ -1,7 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Predicting graph structure from a time series of graphs
+# Predicting graph structure from a time series of graphs <img src="man/figures/logo.png" align="right" height="138" />
+
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 If you have a time series of dynamic graphs that change structure, how
 would you predict future graphs? This is the goal of netseer.
