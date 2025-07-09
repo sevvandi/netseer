@@ -8,7 +8,7 @@
 [![R-CMD-check](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-If you have a time series of dynamic graphs that change structure, how
+If you have a time series of dynamic graphs with changing structure, how
 would you predict future graphs? This is the goal of netseer.
 
 Netseer predicts the graph structure including new nodes and edges from
@@ -27,7 +27,7 @@ install_packages("netseer")
 ```
 
 The vignette for the R package is available under [Get
-Started.](articles/netseer.html)
+Started](articles/netseer.html) at <https://sevvandi.github.io/netseer/>
 
 ## Python code
 

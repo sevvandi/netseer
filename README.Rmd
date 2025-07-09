@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-If you have a time series of dynamic graphs that change structure, how would you predict future graphs? This is the goal of netseer.  
+If you have a time series of dynamic graphs with changing structure, how would you predict future graphs? This is the goal of netseer.  
 
 Netseer predicts the graph structure including new nodes and edges from a time series of graphs. It adapts Flux Balance Analysis, a method used in metabolic network reconstruction to predict the structue of future graphs. The methodology is explained in the preprint [@kand2025graphpred]. 
 
@@ -30,7 +30,7 @@ The algorithm is available in both R and Python. The R package `netseer` in on C
 install_packages("netseer")
 ```
 
-The vignette for the R package is available under [Get Started.](articles/netseer.html) 
+The vignette for the R package is available under [Get Started](articles/netseer.html) at https://sevvandi.github.io/netseer/
 
 ## Python code
 
