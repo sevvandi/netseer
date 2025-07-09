@@ -1,0 +1,103 @@
+---
+output: github_document
+bibliography: bibliography.bib
+title: The R package netseer
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  out.width = "100%"
+)
+```
+
+# netseer <img src="man/figures/logo.png" align="right" height="138" />
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+The goal of netseer is to predict the graph structure including new nodes and edges from a time series of graphs. The methodology is explained in the preprint [@kand2025graphpred]. We will illustrate an example in this vignette. 
+
+## Installation
+
+You can install the development version of netseer from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("sevvandi/netseer")
+```
+
+## An example
+
+This is a basic example which shows you how to predict a graph at the next time point. First let us generate some graphs. 
+
+```{r datagen}
+library(netseer)
+library(igraph)
+
+set.seed(2024)
+edge_increase_val <- new_nodes_val <- del_edge_val <- 0.1
+graphlist <- list()
+graphlist[[1]] <- gr <-  igraph::sample_pa(5, directed = FALSE)
+for(i in 2:15){
+gr <-  generate_graph_exp(gr,
+                          del_edge = del_edge_val,
+                          new_nodes = new_nodes_val,
+                          edge_increase = edge_increase_val )
+graphlist[[i]] <- gr
+}
+```
+
+The *graphlist* contains the list of graphs we generated. Each graph is an *igraph* object.  Let's plot a couple of them. 
+
+### Plotting a couple of graphs
+
+```{r plotdata}
+plot(graphlist[[1]])
+
+plot(graphlist[[8]])
+
+plot(graphlist[[15]])
+```
+
+### Predicting the next graph 
+
+Let's predict the next graph. The argument $h = 1$ specifies we want to predict the graph at the next time point. 
+```{r grpred1}
+grpred <- predict_graph(graphlist[1:15],h = 1)
+grpred
+
+plot(grpred$graph_mean)
+ecount(grpred$graph_mean)
+vcount(grpred$graph_mean)
+```
+
+### Predicting the graph at 2 time steps ahead
+
+Now let us predict the graph at 2 time steps ahead with $h=2$.
+```{r grpred2}
+grpred2 <- predict_graph(graphlist[1:15], h = 2)
+grpred2
+
+plot(grpred2$graph_mean)
+ecount(grpred2$graph_mean)
+vcount(grpred2$graph_mean)
+```
+We see the predicted graph at $h=2$ has more vertices and edges than the graph at $h=1$.  
+
+### Predicting the graph at 3 time steps ahead
+
+Similarly, we can predict the graph at 3 time steps ahead. We don't have a limit on $h$. But generally, as we get further into the future, the predictions are less accurate. This is with everything, not just graphs. 
+
+```{r grpred3}
+grpred3 <- predict_graph(graphlist[1:15], h = 3)
+grpred3
+
+plot(grpred3$graph_mean)
+ecount(grpred3$graph_mean)
+vcount(grpred3$graph_mean)
+```
+
+# References

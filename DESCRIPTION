@@ -30,6 +30,9 @@ Imports:
     tsibble
 Suggests: 
     feasts,
+    knitr,
     nnet,
+    rmarkdown,
     urca
 URL: https://sevvandi.github.io/netseer/
+VignetteBuilder: knitr
