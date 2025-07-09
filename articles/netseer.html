@@ -70,8 +70,8 @@
 <p><a href="https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/sevvandi/netseer/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <!-- badges: end --></p>
 <p>The goal of netseer is to predict the graph structure including new
 nodes and edges from a time series of graphs. The methodology is
-explained in the preprint <span class="citation">(Kandanaarachchi et al.
-2025)</span>. We will illustrate an example in this vignette.</p>
+explained in the preprint <span class="citation">[@kand2025graphpred]</span>. We will illustrate an
+example in this vignette.</p>
 <div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
@@ -143,8 +143,8 @@ specifies we want to predict the graph at the next time point.</p>
 <span><span class="co">#&gt;   as.zoo.data.frame zoo</span></span>
 <span><span class="va">grpred</span></span>
 <span><span class="co">#&gt; $graph_mean</span></span>
-<span><span class="co">#&gt; IGRAPH 1ef20fa U--- 34 23 -- </span></span>
-<span><span class="co">#&gt; + edges from 1ef20fa:</span></span>
+<span><span class="co">#&gt; IGRAPH d14cdf3 U--- 34 23 -- </span></span>
+<span><span class="co">#&gt; + edges from d14cdf3:</span></span>
 <span><span class="co">#&gt;  [1] 28--29 17--19 11--20 11--19 10--11  9--20  5--12  5--10  3--29  3--17</span></span>
 <span><span class="co">#&gt; [11]  3-- 9  3-- 6  3-- 5  2--21  2--17  2-- 4  2-- 3  1--25  1--14  1-- 6</span></span>
 <span><span class="co">#&gt; [21]  1-- 5  1-- 4  1-- 2</span></span>
@@ -174,8 +174,8 @@ specifies we want to predict the graph at the next time point.</p>
 <span><span class="co">#&gt; [2] missing value where TRUE/FALSE needed</span></span>
 <span><span class="va">grpred2</span></span>
 <span><span class="co">#&gt; $graph_mean</span></span>
-<span><span class="co">#&gt; IGRAPH 6a1429d U--- 37 26 -- </span></span>
-<span><span class="co">#&gt; + edges from 6a1429d:</span></span>
+<span><span class="co">#&gt; IGRAPH c5eca27 U--- 37 26 -- </span></span>
+<span><span class="co">#&gt; + edges from c5eca27:</span></span>
 <span><span class="co">#&gt;  [1] 28--29 17--19 13--15 11--20 11--19 10--11  9--20  5--12  5--10  4-- 7</span></span>
 <span><span class="co">#&gt; [11]  3--29  3--17  3-- 9  3-- 6  3-- 5  2--21  2--17  2-- 4  2-- 3  1--25</span></span>
 <span><span class="co">#&gt; [21]  1--14  1--11  1-- 6  1-- 5  1-- 4  1-- 2</span></span>
@@ -212,8 +212,8 @@ less accurate. This is with everything, not just graphs.</p>
 <span><span class="co">#&gt; [2] missing value where TRUE/FALSE needed</span></span>
 <span><span class="va">grpred3</span></span>
 <span><span class="co">#&gt; $graph_mean</span></span>
-<span><span class="co">#&gt; IGRAPH 447b116 U--- 40 29 -- </span></span>
-<span><span class="co">#&gt; + edges from 447b116:</span></span>
+<span><span class="co">#&gt; IGRAPH 480c093 U--- 40 29 -- </span></span>
+<span><span class="co">#&gt; + edges from 480c093:</span></span>
 <span><span class="co">#&gt;  [1] 28--29 17--19 13--15 11--20 11--19 10--11  9--20  5--12  5--10  4-- 7</span></span>
 <span><span class="co">#&gt; [11]  3--29  3--17  3-- 9  3-- 6  3-- 5  2--21  2--17  2-- 4  2-- 3  1--25</span></span>
 <span><span class="co">#&gt; [21]  1--14  1--11  1-- 6  1-- 5  1-- 4  1-- 2  1--38  1--39  4--40</span></span>
@@ -235,15 +235,8 @@ less accurate. This is with everything, not just graphs.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-kand2025graphpred" class="csl-entry">
-Kandanaarachchi, Sevvandi, Ziqi Xu, Stefan Westerlund, and Conrad
-Sanderson. 2025. <span>“Predicting Graph Structure via Adapted Flux
-Balance Analysis.”</span> <a href="https://arxiv.org/abs/2507.05806" class="external-link">https://arxiv.org/abs/2507.05806</a>.
-</div>
-</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
