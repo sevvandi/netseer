@@ -1,7 +1,10 @@
 ---
-output: github_document
-bibliography: bibliography.bib
-title: The R package netseer
+title: "The R package netseer"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{netseer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 
