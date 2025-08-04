@@ -26,8 +26,8 @@ in on CRAN and can be installed as follows:
 install_packages("netseer")
 ```
 
-The vignette for the R package is available under [Get
-Started](articles/netseer.html) at <https://sevvandi.github.io/netseer/>
+The vignette for the R package is available under \[Get Started\] at
+<https://sevvandi.github.io/netseer/>
 
 ## Python package
 
