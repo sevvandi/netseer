@@ -29,18 +29,25 @@ install_packages("netseer")
 The vignette for the R package is available under [Get
 Started](articles/netseer.html) at <https://sevvandi.github.io/netseer/>
 
-## Python code
+## Python package
 
-The Python code is available at
-<https://github.com/sevvandi/netseer-python/>. The Python package will
-be made available in the near future.
+The Python package is available from PyPI at
+<https://pypi.org/project/netseer/>. The Python package can be installed
+as follows:
+
+``` python
+pip install netseer
+```
+
+The documentation for the Python package is available at
+<https://sevvandi.github.io/netseer-python/>.
 
 ## Coding Credits
 
-A big shout out to Stefan Westerlund and Brodie Oldfield for helping
-with this package. Stefan optimized the algorithm in R and coded it from
-scratch in Python. Brodie is currently packaging up the Python code and
-is working on a website for the Python version.
+A big shout out to Stefan Westerlund and Brodie Oldfield for their
+contributions. Stefan optimized the algorithm in R and coded it from
+scratch in Python. Brodie packaged up the Python code and did the
+website for the Python version.
 
 ## References
 

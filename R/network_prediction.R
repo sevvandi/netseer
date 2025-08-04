@@ -25,7 +25,8 @@
 #' proportional weights, but as the network is more in the past, it gives less weight.
 #' Option 5 uses linearly decaying proportional weights. Option 6 uses harmonically decaying
 #' weights. That is the network at \code{T} is given weight 1,  \code{T-1}
-#' is given weight 1/2 and so on. Default is set to \code{6}.
+#' is given weight 1/2 and so on. Option 7 uses 1 for edges that are present in the last
+#' graph. Option 8 is a slightly different to Option 7. It uses 1 for edges in the last seen graph and the \code{weights_param} for new edges. Default is set to \code{8}.
 #' @param weights_param The weight given for possible edges from new vertices. Default
 #' set to \code{0.001}.
 #' @param h The prediction time step. Default is \code{ h = 1}.
@@ -66,7 +67,7 @@ predict_graph <- function(graphlist,
                           conf_level1 = NULL,
                           conf_level2 = 90,
                           dense_opt = 2,
-                          weights_opt = 6,
+                          weights_opt = 8,
                           weights_param = 0.001,
                           h = 1){
   # graphlist is the list of graphs
