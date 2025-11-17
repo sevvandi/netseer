@@ -18,7 +18,6 @@ A list of graphs in \code{igraph} format.
 This function reads graphs from a folder to a list
 }
 \examples{
-# example code
 path_to_graphs <- system.file("extdata", package = "netseer")
 grlist <- read_graph_list(path_to_graphs = path_to_graphs, format = "gml")
 grlist
