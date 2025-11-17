@@ -38,3 +38,5 @@ Suggests:
     urca
 URL: https://sevvandi.github.io/netseer/
 VignetteBuilder: knitr
+Depends: 
+    R (>= 3.5)

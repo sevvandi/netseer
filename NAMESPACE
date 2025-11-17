@@ -3,6 +3,7 @@
 export(generate_graph_exp)
 export(generate_graph_linear)
 export(predict_graph)
+export(read_graph_list)
 importFrom(dplyr,'%>%')
 importFrom(dplyr,arrange)
 importFrom(dplyr,distinct)
