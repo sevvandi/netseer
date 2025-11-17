@@ -26,15 +26,14 @@ A list of graphs in `igraph` format.
 ## Examples
 
 ``` r
-# example code
 path_to_graphs <- system.file("extdata", package = "netseer")
 grlist <- read_graph_list(path_to_graphs = path_to_graphs, format = "gml")
 grlist
 #> [[1]]
-#> IGRAPH b959539 U--- 46 116 -- Barabasi graph
+#> IGRAPH 3e12ec8 U--- 46 116 -- Barabasi graph
 #> + attr: name (g/c), power (g/n), m (g/n), zeroappeal (g/n), algorithm
 #> | (g/c), id (v/n)
-#> + edges from b959539:
+#> + edges from 3e12ec8:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 9  1--11  1--12  1--14  1--16  1--17  1--20
 #> [11]  1--22  1--33  1--40  1--43  2-- 4  2--10  2--11  2--13  2--14  2--15
 #> [21]  2--19  2--22  2--28  2--29  2--38  2--39  3-- 5  3-- 6  3--11  3--13
@@ -45,10 +44,10 @@ grlist
 #> + ... omitted several edges
 #> 
 #> [[2]]
-#> IGRAPH ee98131 U--- 51 130 -- Barabasi graph
+#> IGRAPH b1550d5 U--- 51 130 -- Barabasi graph
 #> + attr: name (g/c), power (g/n), m (g/n), zeroappeal (g/n), algorithm
 #> | (g/c), id (v/n)
-#> + edges from ee98131:
+#> + edges from b1550d5:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 9  1--11  1--12  1--14  1--16  1--17  1--20
 #> [11]  1--22  1--33  1--40  1--43  2-- 4  2--10  2--11  2--13  2--14  2--15
 #> [21]  2--19  2--22  2--28  2--29  2--38  2--39  3-- 5  3-- 6  3--11  3--13
@@ -59,10 +58,10 @@ grlist
 #> + ... omitted several edges
 #> 
 #> [[3]]
-#> IGRAPH 9322b56 U--- 56 145 -- Barabasi graph
+#> IGRAPH fb8ec2c U--- 56 145 -- Barabasi graph
 #> + attr: name (g/c), power (g/n), m (g/n), zeroappeal (g/n), algorithm
 #> | (g/c), id (v/n)
-#> + edges from 9322b56:
+#> + edges from fb8ec2c:
 #>  [1] 1-- 2 1-- 4 1-- 5 1-- 9 1--11 1--12 1--14 1--16 1--17 1--20 1--22 1--32
 #> [13] 1--33 1--40 1--43 2-- 4 2--10 2--11 2--13 2--14 2--15 2--19 2--22 2--28
 #> [25] 2--29 2--38 2--39 2--56 3-- 5 3-- 6 3--11 3--13 3--14 3--21 3--28 3--33

@@ -107,8 +107,8 @@ grpred <- predict_graph(graphlist[1:15], conf_level2 = 90, weights_opt = 6)
 #>   as.zoo.data.frame zoo 
 grpred
 #> $graph_mean
-#> IGRAPH 1260308 U--- 34 23 -- 
-#> + edges from 1260308:
+#> IGRAPH e138ec9 U--- 34 23 -- 
+#> + edges from e138ec9:
 #>  [1] 28--29 17--19 11--20 11--19 10--11  9--20  5--12  5--10  3--29  3--17
 #> [11]  3-- 9  3-- 6  3-- 5  2--21  2--17  2-- 4  2-- 3  1--25  1--14  1-- 6
 #> [21]  1-- 5  1-- 4  1-- 2

@@ -49,9 +49,9 @@ A graph.
 set.seed(1)
 gr <- generate_graph_exp()
 gr
-#> IGRAPH 76687d7 U--- 6 4 -- Barabasi graph
+#> IGRAPH d5e9d4f U--- 6 4 -- Barabasi graph
 #> + attr: name (g/c), power (g/n), m (g/n), zero.appeal (g/n), algorithm
 #> | (g/c)
-#> + edges from 76687d7:
+#> + edges from d5e9d4f:
 #> [1] 1--2 1--3 1--4 2--5
 ```

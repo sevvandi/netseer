@@ -59,15 +59,14 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># example code</span></span></span>
-<span class="r-in"><span><span class="va">path_to_graphs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"netseer"</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">path_to_graphs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"netseer"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">grlist</span> <span class="op">&lt;-</span> <span class="fu">read_graph_list</span><span class="op">(</span>path_to_graphs <span class="op">=</span> <span class="va">path_to_graphs</span>, format <span class="op">=</span> <span class="st">"gml"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">grlist</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH b959539 U--- 46 116 -- Barabasi graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH 3e12ec8 U--- 46 116 -- Barabasi graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> + attr: name (g/c), power (g/n), m (g/n), zeroappeal (g/n), algorithm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | (g/c), id (v/n)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from b959539:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from 3e12ec8:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1-- 2  1-- 4  1-- 5  1-- 9  1--11  1--12  1--14  1--16  1--17  1--20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11]  1--22  1--33  1--40  1--43  2-- 4  2--10  2--11  2--13  2--14  2--15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [21]  2--19  2--22  2--28  2--29  2--38  2--39  3-- 5  3-- 6  3--11  3--13</span>
@@ -78,10 +77,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> + ... omitted several edges</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH ee98131 U--- 51 130 -- Barabasi graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH b1550d5 U--- 51 130 -- Barabasi graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> + attr: name (g/c), power (g/n), m (g/n), zeroappeal (g/n), algorithm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | (g/c), id (v/n)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from ee98131:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from b1550d5:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1-- 2  1-- 4  1-- 5  1-- 9  1--11  1--12  1--14  1--16  1--17  1--20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11]  1--22  1--33  1--40  1--43  2-- 4  2--10  2--11  2--13  2--14  2--15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [21]  2--19  2--22  2--28  2--29  2--38  2--39  3-- 5  3-- 6  3--11  3--13</span>
@@ -92,10 +91,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> + ... omitted several edges</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH 9322b56 U--- 56 145 -- Barabasi graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> IGRAPH fb8ec2c U--- 56 145 -- Barabasi graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> + attr: name (g/c), power (g/n), m (g/n), zeroappeal (g/n), algorithm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> | (g/c), id (v/n)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from 9322b56:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> + edges from fb8ec2c:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1-- 2 1-- 4 1-- 5 1-- 9 1--11 1--12 1--14 1--16 1--17 1--20 1--22 1--32</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [13] 1--33 1--40 1--43 2-- 4 2--10 2--11 2--13 2--14 2--15 2--19 2--22 2--28</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [25] 2--29 2--38 2--39 2--56 3-- 5 3-- 6 3--11 3--13 3--14 3--21 3--28 3--33</span>

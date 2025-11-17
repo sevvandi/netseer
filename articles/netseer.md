@@ -91,8 +91,8 @@ grpred <- predict_graph(graphlist[1:15],h = 1)
 #>   as.zoo.data.frame zoo
 grpred
 #> $graph_mean
-#> IGRAPH bf2e41c U--- 34 23 -- 
-#> + edges from bf2e41c:
+#> IGRAPH c28e147 U--- 34 23 -- 
+#> + edges from c28e147:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--14  1--25  2-- 3  2-- 4  2--21  3-- 6
 #> [11]  3-- 9  3--17  3--29  5--10  5--12  9--20 10--11 11--19 11--20 17--19
 #> [21] 28--29  1-- 3 17--34
@@ -125,8 +125,8 @@ grpred2 <- predict_graph(graphlist[1:15], h = 2)
 #> [2] missing value where TRUE/FALSE needed
 grpred2
 #> $graph_mean
-#> IGRAPH f209e3f U--- 37 26 -- 
-#> + edges from f209e3f:
+#> IGRAPH bb107df U--- 37 26 -- 
+#> + edges from bb107df:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--14  1--25  2-- 3  2-- 4  2--21  3-- 6
 #> [11]  3-- 9  3--17  3--29  5--10  5--12  9--20 10--11 11--19 11--20 17--19
 #> [21] 28--29  1-- 3  3-- 4  2-- 5  4-- 5 17--37
@@ -164,8 +164,8 @@ grpred3 <- predict_graph(graphlist[1:15], h = 3)
 #> [2] missing value where TRUE/FALSE needed
 grpred3
 #> $graph_mean
-#> IGRAPH a66463b U--- 40 29 -- 
-#> + edges from a66463b:
+#> IGRAPH 8f44ef0 U--- 40 29 -- 
+#> + edges from 8f44ef0:
 #>  [1]  1-- 2  1-- 4  1-- 5  1-- 6  1--14  1--25  2-- 3  2-- 4  2--21  3-- 6
 #> [11]  3-- 9  3--17  3--29  5--10  5--12  9--20 10--11 11--19 11--20 17--19
 #> [21] 28--29  1-- 3  3-- 4  2-- 5  4-- 6  5-- 6  2-- 9  1--10 17--40

@@ -51,9 +51,9 @@ A graph.
 set.seed(1)
 gr <- generate_graph_linear()
 gr
-#> IGRAPH 7ed6d0c U--- 11 12 -- Barabasi graph
+#> IGRAPH f5d684a U--- 11 12 -- Barabasi graph
 #> + attr: name (g/c), power (g/n), m (g/n), zero.appeal (g/n), algorithm
 #> | (g/c)
-#> + edges from 7ed6d0c:
+#> + edges from f5d684a:
 #>  [1] 1-- 2 1-- 4 1-- 7 1--11 2-- 3 2-- 5 2-- 6 5-- 6 5--11 6--10 7-- 8 8-- 9
 ```
